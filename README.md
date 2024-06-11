@@ -7,6 +7,7 @@ Steps to setup the application:
     1) pip install flask
     2) pip install flask_sqlalchemy
     3) pip install -U flask-cors
+    4) pip install mysqlclient
 
 Steps to start the application:
   Run mySQL in phpmyadmin after creating a database called equipdb (change your password in the app.py if u have your own account) 
