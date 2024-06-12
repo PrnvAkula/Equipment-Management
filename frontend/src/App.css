@@ -1,3 +1,56 @@
-.App {
-  text-align: center;
+body{
+  margin: 0;
+}
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+}
+.mainContainer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-image: url(../Images/images.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  background-attachment: fixed; 
+  background-size: 40% 50%;
+
+}
+.inputBox{
+  height: 48px;
+  width: 300px;
+  border-radius: 8px;
+  border: 1px solid grey;
+  padding-left: 8px;
+
+}
+.inputButton{
+  border: none;
+  background: cornflowerblue;
+  color: white;
+  padding: 12px 20px;
+  margin: 8px;
+  font-size: 16px;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer
+}
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: black;
+  font-size: 50px;
+  font-weight: bold;
+  
+  
 }
