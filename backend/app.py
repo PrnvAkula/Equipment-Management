@@ -6,7 +6,7 @@ from flask_cors import CORS  # Import the CORS class
 app = Flask(__name__)
 CORS(app)  # Enable CORS
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 function AddEquipment() {
@@ -7,7 +7,7 @@ function AddEquipment() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const response = await axios.post('http://localhost:5000/add_equipment', { eid, ename });
+        const response = await axios.post('http://127.0.0.1:5000/add_equipment', { eid, ename });
         console.log(response.data);
     };
 
