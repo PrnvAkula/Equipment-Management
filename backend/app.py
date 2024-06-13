@@ -71,26 +71,6 @@ with app.app_context():
 #THE FUNCTIONS:
 
 #registering a user
-# @app.route('/register', methods=['POST'])
-# def register_user():
-#     data = request.json
-#     userid = data.get('userid')
-#     password = data.get('password')
-#     designation = data.get('designation')
-    
-#     if designation == 'Staff':
-#         user = Staff(userid=userid)
-#         user.set_password(password)  # Hash the password
-#     elif designation == 'Doctor':
-#         user = Doctor(userid=userid)
-#         user.set_password(password)  # Hash the password
-#     else:
-#         return jsonify({"error": "Invalid designation"}), 400
-    
-#     db.session.add(user)
-#     db.session.commit()
-    
-#     return jsonify({"message": "Registration successful", "userid": userid, "designation": designation})
 @app.route('/register', methods=['POST'])
 def register_user():
     data = request.json

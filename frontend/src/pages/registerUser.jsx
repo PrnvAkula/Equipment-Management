@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Form from '../components/Form';
 
 function RegisterUser() {
     const [userid, setUserid] = useState('');
@@ -9,7 +10,7 @@ function RegisterUser() {
     const [designation, setDesignation] = useState('');
     const navigate = useNavigate();
 
-    
+
     const designationMapping = {
         "1": "Staff",
         "2": "Doctor",
@@ -18,7 +19,7 @@ function RegisterUser() {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        
+
         const mappedDesignation = designationMapping[designation];
 
         if (!mappedDesignation) {
@@ -44,35 +45,15 @@ function RegisterUser() {
     return (
         <div className='mainContainer'>
             <header className='header'>Register for Equipment Booking Portal</header>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>User ID:</label>
-                    <input
-                        type="text"
-                        value={userid}
-                        onChange={(e) => setUserid(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Designation:</label>
-                    <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
-                        <option value="">Select Designation</option>
-                        <option value="1">Staff</option>
-                        <option value="2">Doctor</option>
-                    </select>
-                </div>
-                <button type="submit">Register</button>
-            </form>
+            <div>
+                <label>Designation:</label>
+                <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
+                    <option value="">Select Designation</option>
+                    <option value="1">Staff</option>
+                    <option value="2">Doctor</option>
+                </select>
+            </div>
+            <Form userid={userid} password={password} setuserid={setUserid} setpassword={setPassword} handleSubmit={handleSubmit} />
         </div>
     );
 }
