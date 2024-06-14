@@ -51,8 +51,17 @@ body{
   color: black;
   font-size: 50px;
   font-weight: bold;
-  
-  
+}
+.logo{
+  background-image: url(../Images/images.png);
+  background-repeat: no-repeat;
+  background-color: black;
+  background-position: left;
+
+  height: 100px;
+  width : 100px;
+  background-size: 100% 100%; 
+
 }
 .equipment{
   display: flex;

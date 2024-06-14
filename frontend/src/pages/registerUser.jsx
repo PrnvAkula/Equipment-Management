@@ -37,7 +37,7 @@ function RegisterUser() {
                 navigate('/login');
             })
             .catch(error => {
-                console.error('Registration failed', error.response.data);
+                Error('Registration failed', error.response.data);
                 // Optionally, inform the user that registration has failed
             });
     };
