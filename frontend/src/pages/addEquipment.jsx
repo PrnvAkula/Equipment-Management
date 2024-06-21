@@ -12,17 +12,21 @@ function AddEquipment() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Equipment ID:
-                <input type="number" value={eid} onChange={e => setEid(e.target.value)} />
-            </label>
-            <label>
-                Equipment Name:
-                <input type="text" value={ename} onChange={e => setEname(e.target.value)} />
-            </label>
-            <button type="submit">Submit</button>
-        </form>
+        <div className='page'>
+            <div className='equipment'>
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        Equipment ID:
+                        <input type="number" value={eid} onChange={e => setEid(e.target.value)} />
+                    </label>
+                    <label>
+                        Equipment Name:
+                        <input type="text" value={ename} onChange={e => setEname(e.target.value)} />
+                    </label>
+                </form>
+            </div>
+                <button className='but' type="submit">Submit</button>
+        </div>
     );
 }
 

@@ -1,5 +1,3 @@
-
-
 export default function Form({userid, password, setuserid, setpassword, handleSubmit}){
 
     return (

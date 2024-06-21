@@ -44,7 +44,7 @@ function RegisterUser() {
 
     return (
         <div className='mainContainer'>
-            <header className='header'>Register for Equipment Booking Portal</header>
+            <header className='header'>Registration Form</header>
             <div>
                 <label>Designation:</label>
                 <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
