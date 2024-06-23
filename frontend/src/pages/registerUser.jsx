@@ -44,8 +44,8 @@ function RegisterUser() {
 
     return (
         <div className='mainContainer'>
-            <header className='header'>Registration Form</header>
-            <div>
+            <header className='header'>Registration for Equipment Booking</header>
+            <div className='designation'>
                 <label>Designation:</label>
                 <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
                     <option value="">Select Designation</option>
@@ -53,7 +53,12 @@ function RegisterUser() {
                     <option value="2">Doctor</option>
                 </select>
             </div>
-            <Form userid={userid} password={password} setuserid={setUserid} setpassword={setPassword} handleSubmit={handleSubmit} />
+            <Form userid={userid}
+            password={password} 
+            setuserid={setUserid} 
+            setpassword={setPassword} 
+            handleSubmit={handleSubmit} 
+            buttoner={"Sign In"} />
         </div>
     );
 }

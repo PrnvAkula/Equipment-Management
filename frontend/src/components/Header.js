@@ -3,6 +3,7 @@ export default function Header() {
         <div className="head">
             <div className="logo"></div>
             
+            
         </div>
     );
 }

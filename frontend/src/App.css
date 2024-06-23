@@ -23,6 +23,7 @@ body{
   background-size: 20% 30%;
 
 }
+
 .inputBox{
   height: 48px;
   width: 300px;
@@ -63,7 +64,14 @@ body{
   background-size: 100% 100%; 
 
 }
-.equipment{
+.designation{
+ 
+  height: 40px;
+  color: black;
+  font-size: 20px;
+
+  margin-bottom: 1px;
+}.equipment{
   display: flex;
   flex-direction: column;
   align-items: center;

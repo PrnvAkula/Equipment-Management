@@ -1,4 +1,6 @@
-export default function Form({userid, password, setuserid, setpassword, handleSubmit}){
+
+
+export default function Form({userid, password, setuserid, setpassword, handleSubmit,buttoner}){
 
     return (
         <div >
@@ -8,7 +10,7 @@ export default function Form({userid, password, setuserid, setpassword, handleSu
                 onChange = {e => setuserid(e.target.value)} />
                 <input className="inputBox" type="password" value={password} placeholder="Password"
                 onChange = {e => setpassword(e.target.value)} />
-                <button className = "inputButton" type="submit">Submit</button>
+                <button className = "inputButton" type="submit">{buttoner}</button>
             </form>
         </div>
     );
