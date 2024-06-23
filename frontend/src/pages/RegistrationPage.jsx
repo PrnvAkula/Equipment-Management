@@ -16,9 +16,8 @@ function RegisterUser() {
         "2": "Doctor",
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit =  async (event) => {
         event.preventDefault();
-
 
         const mappedDesignation = designationMapping[designation];
 
@@ -27,7 +26,7 @@ function RegisterUser() {
             return;
         }
 
-        axios.post('http://127.0.0.1:5000/register', JSON.stringify({ userid, password, designation: mappedDesignation }), {
+        axios.post('http://localhost:5000/register', JSON.stringify({ userid, password, designation: mappedDesignation }), {
             headers: {
                 'Content-Type': 'application/json',
             },

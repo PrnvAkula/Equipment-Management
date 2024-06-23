@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 function LoginPage() {
     const [userid, setuserid] = useState('');
     const [password, setpassword] = useState('');
-    // const [designation, setDesignation] = useState('');
     const [loginError, setLoginError] = useState('');
     const navigate = useNavigate();
 
@@ -28,13 +27,6 @@ function LoginPage() {
             <div className='mainContainer'>
                 <header className='header'>Equipment Booking Portal</header>
                 {loginError && <div className="error">{loginError}</div>}
-                {/* <div>
-                    <label>Designation:</label>
-                    <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
-                        <option value="Doctor">Doctor</option>
-                        <option value="Staff">Staff</option>
-                    </select>
-                </div> */}
                 <Form userid={userid}
                     password={password}
                     setuserid={setuserid}

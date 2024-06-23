@@ -52,11 +52,12 @@ class Designation(Enum):
 
 #creating a equipment table
 class Equipment(db.Model):
-    eid = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    branch = db.Column(db.String(100), nullable=False)
     ename = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, eid, ename):
-        self.eid = eid
+    def __init__(self, branch, ename):
+        self.branch = branch
         self.ename = ename
 
 
@@ -129,9 +130,9 @@ def login():
 @app.route('/add_equipment', methods=['POST'])
 def add_equipment():
     data = request.get_json()
-    eid = data['eid']
+    branch = data['branch']
     ename = data['ename']
-    new_equipment = Equipment(eid=eid, ename=ename)
+    new_equipment = Equipment(branch=branch, ename=ename)
     db.session.add(new_equipment)
     db.session.commit()
     return jsonify({'message': 'New equipment added'}), 201
