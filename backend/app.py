@@ -12,101 +12,54 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_so
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-#CREATING THE REQUIRED TABLES:
-
-#creating a user tables:
-class Staff(db.Model):
-    userid = db.Column(db.String(100), unique=True, nullable=False, primary_key=True)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class Doctor(db.Model):
-    userid = db.Column(db.String(100), unique=True, nullable=False, primary_key=True)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-    
-class Designation(Enum):
-    STAFF = auto()
-    DOCTOR = auto()
-
-    @staticmethod
-    def from_string(s):
-        if s.lower() == 'staff':
-            return Designation.STAFF
-        elif s.lower() == 'doctor':
-            return Designation.DOCTOR
-        else:
-            raise ValueError("Invalid designation")
-    
-
-
-#creating a equipment table
 class Equipment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    userid = db.Column(db.String(100), nullable=False)
     branch = db.Column(db.String(100), nullable=False)
     ename = db.Column(db.String(100), nullable=False)
-
-    def __init__(self, branch, ename):
+    toTime = db.Column(db.Time)
+    fromTime = db.Column(db.Time)
+    date = db.Column(db.Date)
+    surgeryType = db.Column(db.String(100), nullable=False)
+    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, date):
+        self.userid = userid
         self.branch = branch
         self.ename = ename
+        self.surgeryType = surgeryType
+        self.toTime = toTime
+        self.fromTime = fromTime
+        self.date = date
+class Registration(db.Model):
 
+    userid = db.Column(db.String(100), nullable=False, primary_key=True)
+    password_hash = db.Column(db.String(300), nullable=False)
+    designation = db.Column(db.String(100), nullable=False)
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
 with app.app_context():
     db.create_all()
-
-
-
-
-
 #THE FUNCTIONS:
-
 #registering a user
 @app.route('/register', methods=['POST'])
 def register_user():
-    data = request.json
+    data = request.get_json()
     userid = data.get('userid')
     password = data.get('password')
     designation_str = data.get('designation')
-
     if not userid or not password or not designation_str:
         return jsonify({"error": "Missing userid, password, or designation"}), 400
-
-    try:
-        designation = Designation.from_string(designation_str)
-    except ValueError:
-        return jsonify({"error": "Invalid designation"}), 400
-
-    user = None
-    if designation == Designation.STAFF:
-        user = Staff(userid=userid)
-    elif designation == Designation.DOCTOR:
-        user = Doctor(userid=userid)
-    else:
-        return jsonify({"error": "Invalid designation"}), 400
-
-    user.set_password(password)
-    try:
-        db.session.add(user)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": "User registration failed", "message": str(e)}), 500
-
-    return jsonify({"message": "Registration successful", "userid": userid, "designation": designation.name})
-
-
+    new_user = Registration(userid=userid, designation=designation_str,)
+    Registration.set_password(new_user, password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"message": "Registration successful", "userid": userid, "designation": designation_str})
 #login authentication
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -115,35 +68,29 @@ def login():
     designation = data.get('designation')
 
     user = None
-    if designation == 'Doctor':
-        user = Doctor.query.filter_by(userid=userid).first()
-    elif designation == 'Staff':
-        user = Staff.query.filter_by(userid=userid).first()
-
+    user = Registration.query.filter_by(userid=userid).first()
     if user and check_password_hash(user.password_hash, password):
-        return jsonify({'message': 'Login successful'}), 200
+        return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation}), 200
     else:
         return jsonify({'message': 'Invalid userid or password'}), 401
     
     
+ 
 #adding an equipment
 @app.route('/add_equipment', methods=['POST'])
 def add_equipment():
     data = request.get_json()
+    userid = data['username']
     branch = data['branch']
     ename = data['ename']
-    new_equipment = Equipment(branch=branch, ename=ename)
+    surgeryType = data['surgeryType']
+    toTime = data['toTime']
+    fromTime = data['fromTime']
+    date = data['date']
+    new_equipment = Equipment(userid=userid,branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)
     db.session.add(new_equipment)
     db.session.commit()
     return jsonify({'message': 'New equipment added'}), 201
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':

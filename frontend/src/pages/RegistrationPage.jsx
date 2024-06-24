@@ -11,34 +11,31 @@ function RegisterUser() {
     const navigate = useNavigate();
 
 
-    const designationMapping = {
-        "1": "Staff",
-        "2": "Doctor",
-    };
-
     const handleSubmit =  async (event) => {
         event.preventDefault();
 
-        const mappedDesignation = designationMapping[designation];
-
-        if (!mappedDesignation) {
+        if (!designation) {
             console.error('Invalid designation selected');
             return;
         }
-
-        axios.post('http://localhost:5000/register', JSON.stringify({ userid, password, designation: mappedDesignation }), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                console.log('Registration successful', response.data);
-                navigate('/login');
-            })
-            .catch(error => {
-                Error('Registration failed', error.response.data);
-                // Optionally, inform the user that registration has failed
-            });
+        try {
+            const response = await axios.post('http://127.0.0.1:5000/register', { userid, password, designation});
+            console.log('Response:', response.data);
+            navigate('/login');
+        } catch (error) {
+            console.error('Error:', error);
+            
+        }
+        // axios.post('http://localhost:5000/register', JSON.stringify({ userid, password, designation: mappedDesignation })
+        //     .then(response => {
+        //         console.log('Registration successful', response.data);
+        //         navigate('/login');
+        //     })
+        //     .catch(error => {
+        //         Error('Registration failed', error.response.data);
+        //         // Optionally, inform the user that registration has failed
+        //     });
+        // );
     };
 
     return (
@@ -48,8 +45,8 @@ function RegisterUser() {
                 <label>Designation:</label>
                 <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
                     <option value="">Select Designation</option>
-                    <option value="1">Staff</option>
-                    <option value="2">Doctor</option>
+                    <option value="staff">Staff</option>
+                    <option value="doctor">Doctor</option>
                 </select>
             </div>
             <Form userid={userid}
@@ -57,7 +54,8 @@ function RegisterUser() {
             setuserid={setUserid} 
             setpassword={setPassword} 
             handleSubmit={handleSubmit} 
-            buttoner={"Sign In"} />
+            buttoner={"Sign In"}
+            register = {'T'} />
         </div>
     );
 }

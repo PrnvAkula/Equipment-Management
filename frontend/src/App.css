@@ -58,17 +58,22 @@ body{
   background-repeat: no-repeat;
   background-color: black;
   background-position: left;
-
   height: 100px;
   width : 100px;
   background-size: 100% 100%; 
-
 }
 .designation{
- 
   height: 40px;
   color: black;
   font-size: 20px;
-
   margin-bottom: 1px;
+}
+.head{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.welcome{
+  margin-right:30px;
+  font-size: 20px;
 }

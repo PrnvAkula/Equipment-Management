@@ -12,8 +12,9 @@ function App() {
         <div className="App">
             <Router>
                 <Routes>
-                    <Route strict path="/handledoctor" element={<HandleDoctor/>} />
+                    <Route strict path="/" element={<RegisterUser/>} />
                     <Route strict path="/register" element={<RegisterUser/>} />
+                    <Route strict path="/handledoctor" element={<HandleDoctor/>} />
                     <Route strict path="/home" element={<HomePage/>} />
                     <Route strict path="/addequipment" element={<AddEquipment/>} />
                     <Route strict path="/login" element={<LoginPage/>} />
