@@ -31,7 +31,7 @@ function LoginPage() {
             })
             .catch(error => {
                 console.error('Login failed', error.response.data);
-                setLoginError('Login failed: Incorrect userid or password. Please try again.');
+                setLoginError('Invalid Username or Password.');
             });
     }
 

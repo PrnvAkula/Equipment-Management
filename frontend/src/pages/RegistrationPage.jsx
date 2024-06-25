@@ -15,13 +15,13 @@ function RegisterUser() {
         event.preventDefault();
 
         if (!designation) {
-            console.error('Invalid designation selected');
+            Error('Invalid designation selected');
             return;
         }
         try {
             const response = await axios.post('http://127.0.0.1:5000/register', { userid, password, designation});
             console.log('Response:', response.data);
-            navigate('/login');
+            navigate('/');
         } catch (error) {
             console.error('Error:', error);
             
