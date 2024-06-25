@@ -5,20 +5,23 @@ import HomePage from './pages/StaffHomePage';
 import RegisterUser from './pages/RegistrationPage';
 import AddEquipment from './pages/AddEquipmentPage';
 import './App.css';
-import HandleDoctor from './pages/HandleDoctor';
+import NotFound from './pages/NotFound';
+import { AuthProvider } from './Util/Context';
+import RequireAuth from './Util/RequireAuth.jsx';
 
 function App() {
     return (
         <div className="App">
             <Router>
+                <AuthProvider>
                 <Routes>
-                    <Route strict path="/" element={<RegisterUser/>} />
-                    <Route strict path="/register" element={<RegisterUser/>} />
-                    <Route strict path="/handledoctor" element={<HandleDoctor/>} />
-                    <Route strict path="/home" element={<HomePage/>} />
-                    <Route strict path="/addequipment" element={<AddEquipment/>} />
-                    <Route strict path="/login" element={<LoginPage/>} />
+                    <Route exact path="/register" element={<RegisterUser/>} />
+                    <Route exact path="*" element={<NotFound/>} />
+                    <Route exact path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
+                    <Route exact path="/addequipment" element={<RequireAuth><AddEquipment /></RequireAuth>} />
+                    <Route exact path="/" element={<LoginPage/>} />
                 </Routes>
+                </AuthProvider>
             </Router>
         </div>
     );

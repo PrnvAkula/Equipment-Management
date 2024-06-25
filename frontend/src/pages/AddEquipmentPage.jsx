@@ -16,6 +16,7 @@ function AddEquipment() {
     const [surgeryType, setSurgeryType] = useState('');
     const { username } = location.state || {};
     
+    
 
     const handleSubmit = async (event) => {
         event.preventDefault();

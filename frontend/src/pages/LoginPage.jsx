@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import Form from '../components/Form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../Util/Context';
 
 function LoginPage() {
     const [userid, setuserid] = useState('');
     const [password, setpassword] = useState('');
     const [loginError, setLoginError] = useState('');
-
+    const auth = useAuth();
     const navigate = useNavigate();
 
     function handleSubmit(event) {
@@ -16,11 +17,13 @@ function LoginPage() {
             .then(response => {
                 console.log('Login successful', response.data);
                 setuserid(response.data.username);
+                const authToken = "userToken123";
+                sessionStorage.setItem('authToken', authToken);
+                auth.login()
                 
                 if (response.data.designation === 'doctor')
                     navigate('/addequipment',{state : { username: userid }});
                     // navigate('/addequipment')
-
                 else
                     navigate('/home')
 

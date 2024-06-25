@@ -11,7 +11,7 @@ export default function Form({userid, password, setuserid, setpassword, handleSu
                 <input className="inputBox" type="password" value={password} placeholder="Password"
                 onChange = {e => setpassword(e.target.value)} />
                 {login && <p>Don't have an account? <Link to="/register">Register</Link></p>}
-                {register && <p>Already have an account? <Link to="/login">Login</Link></p>}
+                {register && <p>Already have an account? <Link to="/">Login</Link></p>}
                 <button className = "inputButton" type="submit">{buttoner}</button>
             </form>
         </div>
