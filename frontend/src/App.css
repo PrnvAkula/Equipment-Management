@@ -62,6 +62,15 @@ body{
   width : 100px;
   background-size: 100% 100%; 
 }
+
+.custom-nav-link {
+  color: rgb(42, 129, 61) !important; 
+}
+
+/* .navbar-bg {
+  background-color: #333; /* Example: dark gray background 
+} */
+
 .designation{
   height: 40px;
   color: black;

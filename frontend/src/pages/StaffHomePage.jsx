@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
-import Header from '../components/Header'
 import { useState } from 'react';
 import Table from '../components/Table';
+import TabsExample from '../components/Nav';
 
-function HomePage() {
+function StaffHome() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -15,10 +15,10 @@ function HomePage() {
 
   return (
     <div>
-      <Header />
+      <TabsExample />
       <Table data = {data}/>
     </div>
   );
 }
 
-export default HomePage;
+export default StaffHome;

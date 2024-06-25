@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import Details from '../components/Details';
 
-function AddEquipment() {
+function BookingPage() {
     const today = new Date();
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>10 ? '-' : '-0') +  (today.getMonth() + 1 ) + '-' + today.getDate();
     const location = useLocation();
@@ -15,19 +15,21 @@ function AddEquipment() {
     const [toTime, setToTime] = useState('12:00');
     const [surgeryType, setSurgeryType] = useState('');
     const { username } = location.state || {};
-    
-    
+        
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log(date, fromTime, toTime, surgeryType,ename, branch);
         try {
-            const response = await axios.post('http://127.0.0.1:5000/add_equipment', { username, branch, ename, date, fromTime, toTime, surgeryType});
+            const response = await axios.post('http://127.0.0.1:5000/booking', { username, branch, ename, date, fromTime, toTime, surgeryType});
             console.log('Response:', response.data);
+            const message = response.data.message || 'Equipment added successfully';
+            window.alert(message);
             // navigate('/handledoctor');
         } catch (error) {
             console.error('Error:', error);
-            // Handle error, show error message, etc.
+            const message = error.response?.data?.error || 'Facing an unkown error';
+            window.alert(message);
         }
     };
         
@@ -88,4 +90,4 @@ function AddEquipment() {
     );
 }
 
-export default AddEquipment;
+export default BookingPage;

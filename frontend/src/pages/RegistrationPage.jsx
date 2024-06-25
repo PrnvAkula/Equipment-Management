@@ -42,7 +42,6 @@ function RegisterUser() {
         <div className='mainContainer'>
             <header className='header'>Registration for Equipment Booking</header>
             <div className='designation'>
-                <label>Designation:</label>
                 <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
                     <option value="">Select Designation</option>
                     <option value="staff">Staff</option>

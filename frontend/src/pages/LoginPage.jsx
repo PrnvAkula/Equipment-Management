@@ -22,10 +22,10 @@ function LoginPage() {
                 auth.login()
                 
                 if (response.data.designation === 'doctor')
-                    navigate('/addequipment',{state : { username: userid }});
+                    navigate('/doctorhome',{state : { username: userid }});
                     // navigate('/addequipment')
                 else
-                    navigate('/home')
+                    navigate('/staffhome')
 
             
             })

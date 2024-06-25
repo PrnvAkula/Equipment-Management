@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_so
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-class Equipment(db.Model):
+class BookingsTB(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userid = db.Column(db.String(100), nullable=False)
     branch = db.Column(db.String(100), nullable=False)
@@ -66,7 +66,6 @@ def login():
     data = request.get_json()
     userid = data['userid']
     password = data['password']
-    designation = data.get('designation')
 
     user = None
     user = Registration.query.filter_by(userid=userid).first()
@@ -76,8 +75,22 @@ def login():
         return jsonify({'message': 'Invalid userid or password'}), 401
  
 #adding an equipment
-@app.route('/add_equipment', methods=['POST'])
-def add_equipment():
+# @app.route('/add_equipment', methods=['POST'])
+# def add_equipment():
+#     data = request.get_json()
+#     userid = data['username']
+#     branch = data['branch']
+#     ename = data['ename']
+#     surgeryType = data['surgeryType']
+#     toTime = data['toTime']
+#     fromTime = data['fromTime']
+#     date = data['date']
+#     new_equipment = Equipment(userid=userid,branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)
+#     db.session.add(new_equipment)
+#     db.session.commit()
+#     return jsonify({'message': 'New equipment added'}), 201
+@app.route('/booking', methods=['POST'])
+def booking():
     data = request.get_json()
     userid = data['username']
     branch = data['branch']
@@ -86,14 +99,29 @@ def add_equipment():
     toTime = data['toTime']
     fromTime = data['fromTime']
     date = data['date']
-    new_equipment = Equipment(userid=userid,branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)
+
+    #Check if surgeryType is empty
+    if not surgeryType:
+        return jsonify({'error': 'Surgery Type cannot be empty'}), 400
+
+    existing_bookings = BookingsTB.query.filter_by(ename=ename, date=date).all()
+
+    # Check for time overlap
+    for booking in existing_bookings:
+        if (fromTime < booking.toTime and toTime > booking.fromTime):
+            return jsonify({'error': 'Timings are clashing with other appointments. Please select different timings and try again.'}), 400
+
+    #If no overlap, add the new booking
+    new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)
     db.session.add(new_equipment)
     db.session.commit()
-    return jsonify({'message': 'New equipment added'}), 201
+    return jsonify({'message': 'Equipment Booked successfully'}), 201
+
+
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    data = Equipment.query.all()
+    data = BookingsTB.query.all()
     result = [{'id': row.id,
             'userid': row.userid,
             'branch': row.branch,
