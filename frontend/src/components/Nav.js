@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Logo from './Logo';
 
-function TabsExample() {
+function TabsExample({ op1, op2, op1href, op2href ,defhref}) {
     function handleSignOut() {
         sessionStorage.removeItem('authToken');
         window.location.reload();
@@ -18,12 +18,13 @@ function TabsExample() {
                     <Logo />
                 </Col>
                 <Col>
-                    <Nav variant="tabs" defaultActiveKey="/home" > 
+                    {/* <Nav variant="tabs" defaultActiveKey={"/home"} >  */}
+                    <Nav variant="tabs"> 
                         <Nav.Item>
-                            <Nav.Link href="/staffhome" className="custom-nav-link">View Bookings</Nav.Link>
+                            <Nav.Link href={op1href} className="custom-nav-link">{op1}</Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
-                            <Nav.Link href="/changeequipment" className="custom-nav-link">Manage Equipment</Nav.Link>
+                            <Nav.Link href={op2href} className="custom-nav-link">{op2}</Nav.Link>
                         </Nav.Item>
                     </Nav>
                 </Col>

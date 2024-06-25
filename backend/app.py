@@ -54,6 +54,17 @@ def register_user():
     designation_str = data.get('designation')
     if not userid or not password or not designation_str:
         return jsonify({"error": "Missing userid, password, or designation"}), 400
+    if len(userid) > 20:
+        return jsonify({"error": "User ID must be at most 20 characters long"}), 400
+    if len(userid) < 5:
+        return jsonify({"error": "User ID must be at least 5 characters long"}), 400
+    if Registration.query.filter_by(userid=userid).first():
+        return jsonify({"error": "User already exists"}), 400
+    if len(password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters long"}), 400
+    if len(password) > 20:
+        return jsonify({"error": "Password must be at most 20 characters long"}), 400
+    
     new_user = Registration(userid=userid, designation=designation_str,)
     Registration.set_password(new_user, password)
     db.session.add(new_user)
@@ -74,21 +85,7 @@ def login():
     else:
         return jsonify({'message': 'Invalid userid or password'}), 401
  
-#adding an equipment
-# @app.route('/add_equipment', methods=['POST'])
-# def add_equipment():
-#     data = request.get_json()
-#     userid = data['username']
-#     branch = data['branch']
-#     ename = data['ename']
-#     surgeryType = data['surgeryType']
-#     toTime = data['toTime']
-#     fromTime = data['fromTime']
-#     date = data['date']
-#     new_equipment = Equipment(userid=userid,branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)
-#     db.session.add(new_equipment)
-#     db.session.commit()
-#     return jsonify({'message': 'New equipment added'}), 201
+
 @app.route('/booking', methods=['POST'])
 def booking():
     data = request.get_json()
@@ -99,8 +96,10 @@ def booking():
     toTime = data['toTime']
     fromTime = data['fromTime']
     date = data['date']
-
-    #Check if surgeryType is empty
+    if not branch:
+        return jsonify({'error': 'Please Choose a Branch'}), 400
+    if not ename:
+        return jsonify({'error': 'Please Choose an Equipment'}), 400
     if not surgeryType:
         return jsonify({'error': 'Surgery Type cannot be empty'}), 400
 
@@ -109,7 +108,7 @@ def booking():
     # Check for time overlap
     for booking in existing_bookings:
         if (fromTime < booking.toTime and toTime > booking.fromTime):
-            return jsonify({'error': 'Timings are clashing with other appointments. Please select different timings and try again.'}), 400
+            return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
 
     #If no overlap, add the new booking
     new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)

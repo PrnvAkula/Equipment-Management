@@ -9,6 +9,8 @@ import NotFound from './pages/NotFound';
 import { AuthProvider } from './Util/Context';
 import RequireAuth from './Util/RequireAuth.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import DeleteBooking from './pages/DeleteBooking';
+import ManageEquipment from './pages/ManageEquipment';
 
 function App() {
     return (
@@ -21,6 +23,9 @@ function App() {
                     <Route exact path="/staffhome" element={<RequireAuth><StaffHome /></RequireAuth>} />
                     <Route exact path="/doctorhome" element={<RequireAuth><BookingPage /></RequireAuth>} />
                     <Route exact path="/" element={<LoginPage/>} />
+                    <Route exact path="/deletebooking" element = {<RequireAuth><DeleteBooking/></RequireAuth>}/>
+                    <Route exact path="/manageequipment" element = {<RequireAuth><ManageEquipment/></RequireAuth>}/>
+
                 </Routes>
                 </AuthProvider>
             </Router>

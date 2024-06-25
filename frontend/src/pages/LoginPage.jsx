@@ -3,6 +3,7 @@ import Form from '../components/Form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Util/Context';
+import Alerts from '../components/Alerts';
 
 function LoginPage() {
     const [userid, setuserid] = useState('');
@@ -31,15 +32,16 @@ function LoginPage() {
             })
             .catch(error => {
                 console.error('Login failed', error.response.data);
-                setLoginError('Invalid Username or Password.');
+                setLoginError('Incorrect Username or Password.');
             });
     }
 
     return (
         <div className='main'>
             <div className='mainContainer'>
+                
                 <header className='header'>Equipment Booking Portal</header>
-                {loginError && <div className="error">{loginError}</div>}
+                {loginError && <Alerts error = {loginError}/>}
                 <Form userid={userid}
                     password={password}
                     setuserid={setuserid}

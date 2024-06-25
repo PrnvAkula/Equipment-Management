@@ -15,7 +15,10 @@ function StaffHome() {
 
   return (
     <div>
-      <TabsExample />
+      <TabsExample op1 = {'View Bookings'}
+      op2 = {'Manage Equipment'}
+      op1href = {'/staffhome'}
+      op2href = {'/manageequipment'} />
       <Table data = {data}/>
     </div>
   );

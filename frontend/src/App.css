@@ -64,12 +64,17 @@ body{
 }
 
 .custom-nav-link {
-  color: rgb(42, 129, 61) !important; 
+  color: #f58634 !important; 
 }
 
-/* .navbar-bg {
-  background-color: #333; /* Example: dark gray background 
-} */
+#signOutButton{
+  color: #040454 !important;
+  border-color: #040454 !important;
+  
+}
+#signOutButton:hover{
+  background-color: rgb(4, 4, 84 , 0.5) ;
+}
 
 .designation{
   height: 40px;

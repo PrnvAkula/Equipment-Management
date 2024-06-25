@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
+import TabsExample from '../components/Nav';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import Details from '../components/Details';
-
+import { Toasts } from '../components/Alerts';
+// import Button from 'react-bootstrap/Button';
 function BookingPage() {
     const today = new Date();
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>10 ? '-' : '-0') +  (today.getMonth() + 1 ) + '-' + today.getDate();
@@ -15,21 +16,26 @@ function BookingPage() {
     const [toTime, setToTime] = useState('12:00');
     const [surgeryType, setSurgeryType] = useState('');
     const { username } = location.state || {};
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
         
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(date, fromTime, toTime, surgeryType,ename, branch);
         try {
             const response = await axios.post('http://127.0.0.1:5000/booking', { username, branch, ename, date, fromTime, toTime, surgeryType});
             console.log('Response:', response.data);
             const message = response.data.message || 'Equipment added successfully';
-            window.alert(message);
-            // navigate('/handledoctor');
+            setSuccess(message);
+            setError('');
+            
         } catch (error) {
             console.error('Error:', error);
             const message = error.response?.data?.error || 'Facing an unkown error';
-            window.alert(message);
+            setError(message);
+            setSuccess('');
+            
+
         }
     };
         
@@ -42,9 +48,13 @@ function BookingPage() {
     return (
         <div>
 
-            <Header
-            username = {username}/>
+            <TabsExample op1 = {'Book Equipment'} 
+            op2= {'Delete Booking'}
+            op1href = {'/doctorhome'}
+            op2href = {'/deletebooking'} />
             <div className='equipment'>
+                {error && Toasts( {error :error, type:'Error', setError : setError})}
+                {success && Toasts( {error :success, type:'Success', setError : setSuccess})}
                 <form >
                     <div className='equipmentInput'>
                     <label>

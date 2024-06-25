@@ -9,21 +9,23 @@ function Table({data}){
     data = slicingDate(data);
     return (
         <div>
-                    <table>
+            <table class="table table-striped">
                 <thead>
-                <tr>
-                    <th>Branch</th>
-                    <th>Doctor</th>
-                    <th>Equipment</th>
-                    <th>Surgery Type</th>
-                    <th>From </th>
-                    <th>To</th>
-                    <th>Date</th>           
-                </tr>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Branch</th>
+                        <th scope="col">Doctor</th>
+                        <th scope="col">Equipment</th>
+                        <th scope="col">Surgery Type</th>
+                        <th scope="col">From </th>
+                        <th scope="col">To</th>
+                        <th scope="col">Date</th>           
+                    </tr>
                 </thead>
                 <tbody>
                 {data.map((row, index) => (
                     <tr key={index}>
+                    <th scope="row">{index+1}</th>
                     <td>{row.branch}</td>
                     <td>{row.userid}</td>
                     <td>{row.ename}</td>
@@ -38,5 +40,4 @@ function Table({data}){
         </div>
     );
 }
-
 export default Table;
