@@ -44,8 +44,8 @@ class Registration(db.Model):
     
 with app.app_context():
     db.create_all()
-#THE FUNCTIONS:
-#registering a user
+
+
 @app.route('/register', methods=['POST'])
 def register_user():
     data = request.get_json()
