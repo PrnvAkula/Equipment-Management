@@ -1,14 +1,15 @@
 # 
 from flask import Flask, request, jsonify
+from json import JSONEncoder
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS  
 from werkzeug.security import generate_password_hash, check_password_hash
-from enum import Enum, auto
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -17,8 +18,8 @@ class Equipment(db.Model):
     userid = db.Column(db.String(100), nullable=False)
     branch = db.Column(db.String(100), nullable=False)
     ename = db.Column(db.String(100), nullable=False)
-    toTime = db.Column(db.Time)
-    fromTime = db.Column(db.Time)
+    toTime = db.Column(db.String(100), nullable=False)
+    fromTime = db.Column(db.String(100), nullable=False)
     date = db.Column(db.Date)
     surgeryType = db.Column(db.String(100), nullable=False)
     def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, date):
@@ -29,8 +30,8 @@ class Equipment(db.Model):
         self.toTime = toTime
         self.fromTime = fromTime
         self.date = date
-class Registration(db.Model):
 
+class Registration(db.Model):
     userid = db.Column(db.String(100), nullable=False, primary_key=True)
     password_hash = db.Column(db.String(300), nullable=False)
     designation = db.Column(db.String(100), nullable=False)
@@ -73,8 +74,6 @@ def login():
         return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation}), 200
     else:
         return jsonify({'message': 'Invalid userid or password'}), 401
-    
-    
  
 #adding an equipment
 @app.route('/add_equipment', methods=['POST'])
@@ -92,6 +91,19 @@ def add_equipment():
     db.session.commit()
     return jsonify({'message': 'New equipment added'}), 201
 
+@app.route('/data', methods=['GET'])
+def get_data():
+    data = Equipment.query.all()
+    result = [{'id': row.id,
+            'userid': row.userid,
+            'branch': row.branch,
+            'ename': row.ename,
+            'surgeryType': row.surgeryType,
+            'fromTime': row.fromTime,
+            'toTime': row.toTime,
+            'date': row.date
+            } for row in data]  # Adjust to include all necessary fields
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)

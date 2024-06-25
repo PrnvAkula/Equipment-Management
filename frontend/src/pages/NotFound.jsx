@@ -1,12 +1,12 @@
 import Header from "../components/Header";
 
-function HandleDoctor() {
+function NotFound() {
     return (
         <div>
             <Header/>
-            <h1>Handle Doctor</h1>
+            <h1>Page Not Found</h1>
         </div>
     )
 }
 
-export default HandleDoctor;
+export default NotFound;
