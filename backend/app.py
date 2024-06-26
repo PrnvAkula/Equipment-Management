@@ -97,6 +97,10 @@ def booking():
     fromTime = data['fromTime']
     date = data['date']
 
+    if not branch:
+        return jsonify({'error' : 'branch field cannot be empty'}),400
+    if not ename:
+        return jsonify({'error' : 'equipment field cannot be empty'}),400
     if not surgeryType:
         return jsonify({'error': 'Surgery Type cannot be empty'}), 400
 
