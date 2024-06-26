@@ -3,7 +3,8 @@ import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 
 
-export default function Alerts ({error }) {
+export default function Alerts ({error})  {
+
     return (
         <>
             <Alert key={'danger'} variant={'danger'}>
@@ -14,6 +15,17 @@ export default function Alerts ({error }) {
       );
 }
 
+export function Success ({success})  {
+
+  return (
+      <>
+          <Alert key={'success'} variant={'success'}>
+            {success}
+          </Alert>
+        
+      </>
+    );
+  }
 export function Toasts ({error, type, onClose}) {
   
   return (

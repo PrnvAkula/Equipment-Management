@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import TabsExample from '../components/Nav';
 import axios from 'axios';
 
@@ -20,6 +20,15 @@ function BookingPage() {
     const username = base64_decode(sessionStorage.getItem('authToken'));
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [equipments, setEquipments] = useState([]);
+
+    useEffect(() => {
+        fetch('http://127.0.0.1:5000/equipment')
+          .then(response => response.json())
+          .then(data => setEquipments(data))
+          .catch(error => console.log('Error fetching data:', error));
+      }, []);
+ 
         
     function onClose(){
         setError('');
@@ -78,10 +87,9 @@ function BookingPage() {
                         Equipment Name:
                         {/* <input type="text" value={ename} onChange={handleChange} /> */}
                         <select onChange={handleEnameChange} value={ename}>
-                            <option value="">Select an Option</option>
-                            <option value="option1">Option 1</option>
-                            <option value="option2">Option 2</option>
-                            <option value="option3">Option 3</option>
+                            {equipments.map((equipment, index) => (
+                                <option key={index} value={equipment.equipment}>{equipment.equipment}</option>
+                            ))}
                         </select>
                     </label>
                     </div>

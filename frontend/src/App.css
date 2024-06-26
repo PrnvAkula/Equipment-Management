@@ -41,7 +41,7 @@ body{
 }
 .inputButton{
   border: none;
-  background: cornflowerblue;
+  background:#040454 ;
   color: white;
   padding: 12px 20px;
   margin: 8px;
@@ -147,4 +147,10 @@ body{
   width: 86px;
   border-color: #f48635;
   margin-left: 200px;
+}
+.but:hover{
+  background-color: rgb(244, 134, 53 , 0.5);
+  border-color: #f48635;
+
+
 }

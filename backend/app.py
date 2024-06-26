@@ -44,6 +44,11 @@ class Registration(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class Equipment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    equipment = db.Column(db.String(100), nullable=False)
+    
     
 with app.app_context():
     db.create_all()
@@ -184,5 +189,35 @@ def delete_booking(Id):
         return jsonify({'message': 'Booking deleted successfully'}), 200
     else:
         return jsonify({'message': 'Booking not found'}), 404
+
+@app.route('/addequipment', methods=['POST'])
+def add_equipment():
+    data = request.get_json()
+    equipment = data['newEquipment']
+    if not equipment:
+        return jsonify({'error': 'Equipment field cannot be empty'}), 400
+    new_equipment = Equipment(equipment=equipment)
+    db.session.add(new_equipment)
+    db.session.commit()
+    return jsonify({'message': 'Equipment added successfully', 'id' : new_equipment.id}), 201
+    
+@app.route('/deleteequipment/<int:Id>', methods=['DELETE'])
+def delete_equipment(Id):
+    equipment = Equipment.query.filter_by(id = Id).first()
+    if equipment:
+        db.session.delete(equipment)
+        db.session.commit()
+        return jsonify({'message': 'Equipment deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'Equipment not found'}), 404
+    
+@app.route('/equipment', methods=['GET'])
+def get_equipment():
+    data = Equipment.query.all()
+    result = [{'id': row.id,
+            'equipment': row.equipment
+            } for row in data]
+    return jsonify(result)
+
 if __name__ == '__main__':
     app.run(debug=True)

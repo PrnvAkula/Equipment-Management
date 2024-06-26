@@ -23,6 +23,10 @@ function DeleteBooking(){
           .catch(error => console.error('Error:', error));
       }, [userId]);
 
+      function afterDelete(id){
+        setData(data.filter(booking => booking.id !== id));
+      }
+
     return (
         <>
         <TabsExample op1 = {'Book Equipment'} 
@@ -30,7 +34,7 @@ function DeleteBooking(){
             op1href = {'/doctorhome'}
             op2href = {'/deletebooking'} />
         {error && <Alerts error = {error}/>}
-        <DeleteTable data = {data} errorr ={error}/>
+        <DeleteTable data = {data} errorr ={error} afterDelete = {afterDelete}/>
         
 
         </>

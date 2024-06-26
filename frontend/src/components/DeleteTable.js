@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from 'react-bootstrap/Button';
 import {Toasts} from   './Alerts';
 
-function DeleteTable({data ,errorr}){
+function DeleteTable({data ,errorr, afterDelete}){
     const [selectedRows, setSelectedRows] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -38,8 +38,9 @@ function DeleteTable({data ,errorr}){
                     }
                 })
                 .catch(error => console.error('Error:', error));
+                afterDelete(row.id);
             });
-            window.location.reload();
+            
   };
         
     return (
@@ -84,7 +85,8 @@ function DeleteTable({data ,errorr}){
                 ))}
                 </tbody>
             </table>
-            <Button onClick={handleDelete} className='but'>Delete</Button>{' '}
+            {!errorr && 
+            <Button onClick={handleDelete} className='but'>Delete</Button>}
         </div>
     );
 }
