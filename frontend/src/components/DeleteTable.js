@@ -58,7 +58,7 @@ function DeleteTable({data ,errorr}){
         <div>
             {error && Toasts( {error :error, type:'Error', onClose : onClose})}
             {success && Toasts( {error :success, type:'Success', onClose : onClose})}
-            <table class="table table-striped">
+            <table className="table table-striped">
                 <thead>
                     <tr>
                         {/* <th scope="col"></th> */}
@@ -94,8 +94,7 @@ function DeleteTable({data ,errorr}){
                 ))}
                 </tbody>
             </table>
-            <Button variant="primary" 
-        onClick={handleDelete}>Delete</Button>{' '}
+            <Button onClick={handleDelete} className='but'>Delete</Button>{' '}
         </div>
     );
 }

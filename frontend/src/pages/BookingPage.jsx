@@ -27,6 +27,7 @@ function BookingPage() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
+            console.log(todaydate);
             const response = await axios.post('http://127.0.0.1:5000/booking', { username, branch, ename, date, fromTime, toTime, surgeryType});
             console.log('Response:', response.data);
             const message = response.data.message || 'Equipment added successfully';
@@ -57,7 +58,7 @@ function BookingPage() {
             op1href = {'/doctorhome'}
             op2href = {'/deletebooking'} />
             <div className='equipment'>
-                Welcome, {username}!
+                <h2> Welcome, {username}! </h2>
                 {error && Toasts( {error :error, type:'Error', onClose : onClose})}
                 {success && Toasts( {error :success, type:'Success', onClose: onClose})}
                 <form >
@@ -96,8 +97,8 @@ function BookingPage() {
             surgeryType = {surgeryType}
             setSurgeryType = {setSurgeryType}
             />
-            }    
-            <button className='but' onClick={handleSubmit} type="submit">Submit</button>
+        }    
+        <button className='but' onClick={handleSubmit} type="submit">Submit</button>
             
 
         </div>

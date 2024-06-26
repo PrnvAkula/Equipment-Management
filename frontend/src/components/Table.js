@@ -15,7 +15,7 @@ function Table({data}){
         
     return (
         <div>
-            <table class="table table-striped">
+            <table className="table table-striped">
                 <thead>
                     <tr>
                         

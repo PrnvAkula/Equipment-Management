@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+.titillium-web-semibold {
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
 body{
   margin: 0;
 }
@@ -90,4 +97,54 @@ body{
 .welcome{
   margin-right:30px;
   font-size: 20px;
+}
+
+.equipment{
+  display:flex;
+  flex-direction: column;
+  margin: 10px 0 10px 140px;
+  font-family: Titillium Web;
+}
+
+.equipment label{
+  margin:10px 10px 0px 0px;
+}
+
+.equipment label select{
+  padding-left:7px;
+  border-radius: 13px;
+  margin-left: 7px;
+  height: 30px;
+  width: 140px;
+  border-color: rgb(241, 239, 239);
+  background-color: rgb(241, 239, 239);
+}
+
+.details{
+  margin-left: 116px;
+}
+.details label{
+  margin-left: 25px;
+}
+
+.details input {
+  padding-left: 7px;
+  border-radius: 13px;
+  margin-left: 7px;
+  height: 30px;
+  border: 1px solid rgb(241, 239, 239); 
+  background-color: rgb(241, 239, 239);
+}
+.surgery-type-box{
+  width: 250px;
+}
+
+.but{
+  background-color: #f48635;
+  color: white;
+  border-radius: 11px;
+  height: 36px;
+  width: 86px;
+  border-color: #f48635;
+  margin-left: 200px;
 }

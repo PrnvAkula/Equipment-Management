@@ -12,7 +12,7 @@ function Details({date , setDate, fromTime, setFromTime, toTime, setToTime, surg
         setToTime(event.target.value); 
       }
   return (
-    <div>
+    <div className='details'>
         <br/>
         <br/>
         <label for="date">Date:</label>
@@ -23,12 +23,10 @@ function Details({date , setDate, fromTime, setFromTime, toTime, setToTime, surg
           <input type="time" className="totime" name="time" value={toTime} onChange={handleToChange}/>
         <label>
             Surgery Type:
-          <input type="text" value={surgeryType} onChange={e => setSurgeryType(e.target.value)} />
+          <input type="text" value={surgeryType} onChange={e => setSurgeryType(e.target.value)} className='surgery-type-box' />
         </label>
         <br/>
         <br/>
-
-
     </div>
   );
 }
