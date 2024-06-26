@@ -11,18 +11,6 @@ function DeleteTable({data ,errorr}){
         setError('');
         setSuccess('');
     }
-    
-    // function formatDate(dateString) {
-    //     const date = new Date(dateString);
-    //     const year = date.getFullYear();
-    //     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-    //     const day = date.getDate().toString().padStart(2, '0');
-    //     return `${day}-${month}-${year}`;
-    //   }
-    // data = data.map((row) => {
-    //     row.date = formatDate(row.date);
-    //     return row;
-    // });
     function handleCheckboxChange(event, row){
         if (event.target.checked) {
           setSelectedRows([...selectedRows, row]);
@@ -67,9 +55,10 @@ function DeleteTable({data ,errorr}){
                         <th scope="col">Doctor</th>
                         <th scope="col">Equipment</th>
                         <th scope="col">Surgery Type</th>
+                        <th scope="col">Start Date</th>           
                         <th scope="col">From </th>
+                        <th scope="col">End Date</th>           
                         <th scope="col">To</th>
-                        <th scope="col">Date</th>           
                     </tr>
                 </thead>
                 <tbody>
@@ -87,9 +76,10 @@ function DeleteTable({data ,errorr}){
                     <td>{row.userid}</td>
                     <td>{row.ename}</td>
                     <td>{row.surgeryType}</td>
+                    <td>{row.startDate}</td>
                     <td>{row.fromTime}</td>
+                    <td>{row.endDate}</td>
                     <td>{row.toTime}</td>
-                    <td>{row.date}</td>
                     </tr>
                 ))}
                 </tbody>

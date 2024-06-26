@@ -1,10 +1,12 @@
 
-function Details({date , setDate, fromTime, setFromTime, toTime, setToTime, surgeryType, setSurgeryType}) {
+function Details({date , setStartDate, setEndDate, fromTime, setFromTime, toTime, setToTime, surgeryType, setSurgeryType}) {
 
-    const handleChange = (event) => {
-        setDate(event.target.value); 
+    const handleStartChange = (event) => {
+        setStartDate(event.target.value); 
       }
-    
+    const handleEndChange = (event) => {
+        setEndDate(event.target.value); 
+      }
     const handleFromChange = (event) => {
         setFromTime(event.target.value); 
       }
@@ -15,8 +17,10 @@ function Details({date , setDate, fromTime, setFromTime, toTime, setToTime, surg
     <div className='details'>
         <br/>
         <br/>
-        <label for="date">Date:</label>
-          <input  value = {date} type="date" id="date" name="date" onChange={handleChange}/>
+        <label for="date">Start Date:</label>
+          <input  value = {date} type="date" id="date" name="date" onChange={handleStartChange}/>
+          <label for="date">End Date:</label>
+          <input  value = {date} type="date" id="date" name="date" onChange={handleEndChange}/>
         <label for="time">From:</label>
           <input type="time" className="fromtime" name="time" value={fromTime} onChange={handleFromChange}/>
         <label for="time">To:</label>

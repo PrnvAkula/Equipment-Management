@@ -12,7 +12,8 @@ function BookingPage() {
   
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
-    const [date, setDate] = useState(`${todaydate}`);  
+    const [startDate, setStartDate] = useState(`${todaydate}`);  
+    const [endDate, setEndDate] = useState(`${todaydate}`);  
     const [fromTime, setFromTime] = useState('00:00');
     const [toTime, setToTime] = useState('12:00');
     const [surgeryType, setSurgeryType] = useState('');
@@ -28,7 +29,7 @@ function BookingPage() {
         event.preventDefault();
         try {
             console.log(todaydate);
-            const response = await axios.post('http://127.0.0.1:5000/booking', { username, branch, ename, date, fromTime, toTime, surgeryType});
+            const response = await axios.post('http://127.0.0.1:5000/booking', { username, branch, ename, startDate, endDate, fromTime, toTime, surgeryType});
             console.log('Response:', response.data);
             const message = response.data.message || 'Equipment added successfully';
             setSuccess(message);
@@ -88,8 +89,10 @@ function BookingPage() {
                 </form>
             </div>
             { branch && ename && <Details
-            date = {date}
-            setDate = {setDate}
+            startDate = {startDate}
+            setStartDate = {setStartDate}
+            endDate = {endDate}
+            setEndDate = {setEndDate}
             fromTime = {fromTime}
             setFromTime = {setFromTime}
             toTime = {toTime}

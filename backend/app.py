@@ -21,16 +21,18 @@ class BookingsTB(db.Model):
     ename = db.Column(db.String(100), nullable=False)
     toTime = db.Column(db.String(100), nullable=False)
     fromTime = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.Date)
+    startDate = db.Column(db.Date)
+    endDate = db.Column(db.Date)
     surgeryType = db.Column(db.String(100), nullable=False)
-    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, date):
+    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, startDate, endDate):
         self.userid = userid
         self.branch = branch
         self.ename = ename
         self.surgeryType = surgeryType
         self.toTime = toTime
         self.fromTime = fromTime
-        self.date = date
+        self.startDate = startDate
+        self.endDate = endDate
 
 class Registration(db.Model):
     userid = db.Column(db.String(100), nullable=False, primary_key=True)
@@ -95,7 +97,8 @@ def booking():
     surgeryType = data['surgeryType']
     toTime = data['toTime']
     fromTime = data['fromTime']
-    date = data['date']
+    startDate = data['startDate']
+    endDate = data['endDate']
 
     if not branch:
         return jsonify({'error' : 'branch field cannot be empty'}),400
@@ -104,23 +107,35 @@ def booking():
     if not surgeryType:
         return jsonify({'error': 'Surgery Type cannot be empty'}), 400
 
-    existing_bookings = BookingsTB.query.filter_by(ename=ename, date=date).all()
+    # existing_bookings = BookingsTB.query.filter_by(ename=ename, startDate=startDate,endDate=endDate).all()
+
+    # for booking in existing_bookings:
+    #     # Convert stored string times to datetime.time objects
+    #     existing_from_time = datetime.strptime(booking.fromTime, '%H:%M').time()
+    #     existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
+    #     request_from_time = datetime.strptime(fromTime, '%H:%M').time()
+    #     request_to_time = datetime.strptime(toTime, '%H:%M').time()
+
+    #     # Check for overlap
+    #     if (request_from_time < existing_to_time and request_to_time > existing_from_time):
+    #         return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
+    request_start_datetime = datetime.strptime(startDate + " " + fromTime, '%Y-%m-%d %H:%M')
+    request_end_datetime = datetime.strptime(endDate + " " + toTime, '%Y-%m-%d %H:%M')
+    existing_bookings = BookingsTB.query.filter_by(ename=ename).all()
 
     for booking in existing_bookings:
-        # Convert stored string times to datetime.time objects
-        existing_from_time = datetime.strptime(booking.fromTime, '%H:%M').time()
-        existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
-        request_from_time = datetime.strptime(fromTime, '%H:%M').time()
-        request_to_time = datetime.strptime(toTime, '%H:%M').time()
+        # Convert stored strings to datetime objects
+        existing_start_datetime = datetime.strptime(booking.startDate + " " + booking.fromTime, '%d-%m-%Y %H:%M')
+        existing_end_datetime = datetime.strptime(booking.endDate + " " + booking.toTime, '%d-%m-%Y %H:%M')
 
         # Check for overlap
-        if (request_from_time < existing_to_time and request_to_time > existing_from_time):
+        if (request_start_datetime < existing_end_datetime and request_end_datetime > existing_start_datetime):
             return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
 
     #If no overlap, add the new booking
 
 
-    new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)
+    new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate)
     db.session.add(new_equipment)
     db.session.commit()
     return jsonify({'message': 'Equipment Booked successfully'}), 201
@@ -135,9 +150,10 @@ def get_data():
             'branch': row.branch,
             'ename': row.ename,
             'surgeryType': row.surgeryType,
+            'startDate': row.startDate,
             'fromTime': row.fromTime,
-            'toTime': row.toTime,
-            'date': row.date
+            'endDate': row.endDate,
+            'toTime': row.toTime
             } for row in data]  # Adjust to include all necessary fields
     return jsonify(result)
 
@@ -151,9 +167,10 @@ def get_items_by_user(userId):
             'branch': row.branch,
             'ename': row.ename,
             'surgeryType': row.surgeryType,
+            'startDate': row.startDate.strftime('%a, %d %b %Y'),
             'fromTime': row.fromTime,
-            'toTime': row.toTime,
-            'date': row.date
+            'endDate': row.endDate.strftime('%a, %d %b %Y'),
+            'toTime': row.toTime
             } for row in data] # Adjust fields as necessary
     return jsonify(result)
 
