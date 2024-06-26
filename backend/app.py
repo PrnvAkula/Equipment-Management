@@ -4,6 +4,7 @@ from json import JSONEncoder
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS  
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -95,21 +96,26 @@ def booking():
     toTime = data['toTime']
     fromTime = data['fromTime']
     date = data['date']
-    if not branch:
-        return jsonify({'error': 'Please Choose a Branch'}), 400
-    if not ename:
-        return jsonify({'error': 'Please Choose an Equipment'}), 400
+
     if not surgeryType:
         return jsonify({'error': 'Surgery Type cannot be empty'}), 400
 
     existing_bookings = BookingsTB.query.filter_by(ename=ename, date=date).all()
 
-    # Check for time overlap
     for booking in existing_bookings:
-        if (fromTime < booking.toTime and toTime > booking.fromTime):
+        # Convert stored string times to datetime.time objects
+        existing_from_time = datetime.strptime(booking.fromTime, '%H:%M').time()
+        existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
+        request_from_time = datetime.strptime(fromTime, '%H:%M').time()
+        request_to_time = datetime.strptime(toTime, '%H:%M').time()
+
+        # Check for overlap
+        if (request_from_time < existing_to_time and request_to_time > existing_from_time):
             return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
 
     #If no overlap, add the new booking
+
+
     new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, date=date)
     db.session.add(new_equipment)
     db.session.commit()
