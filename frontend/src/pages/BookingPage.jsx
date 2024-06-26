@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import TabsExample from '../components/Nav';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+
 import Details from '../components/Details';
 import { Toasts } from '../components/Alerts';
+import { decode as base64_decode } from 'base-64';
 // import Button from 'react-bootstrap/Button';
 function BookingPage() {
     const today = new Date();
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>10 ? '-' : '-0') +  (today.getMonth() + 1 ) + '-' + today.getDate();
-    const location = useLocation();
+  
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
     const [date, setDate] = useState(`${todaydate}`);  
     const [fromTime, setFromTime] = useState('00:00');
     const [toTime, setToTime] = useState('12:00');
     const [surgeryType, setSurgeryType] = useState('');
-    const { username } = location.state || {};
+    const username = base64_decode(sessionStorage.getItem('authToken'));
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
         
-
+    function onClose(){
+        setError('');
+        setSuccess('');
+    }
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -53,8 +57,9 @@ function BookingPage() {
             op1href = {'/doctorhome'}
             op2href = {'/deletebooking'} />
             <div className='equipment'>
-                {error && Toasts( {error :error, type:'Error', setError : setError})}
-                {success && Toasts( {error :success, type:'Success', setError : setSuccess})}
+                Welcome, {username}!
+                {error && Toasts( {error :error, type:'Error', onClose : onClose})}
+                {success && Toasts( {error :success, type:'Success', onClose: onClose})}
                 <form >
                     <div className='equipmentInput'>
                     <label>

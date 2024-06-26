@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Util/Context';
 import Alerts from '../components/Alerts';
+import { encode as base64_encode} from 'base-64'
 
 function LoginPage() {
     const [userid, setuserid] = useState('');
@@ -18,12 +19,12 @@ function LoginPage() {
             .then(response => {
                 console.log('Login successful', response.data);
                 setuserid(response.data.username);
-                const authToken = "userToken123";
+                const authToken = base64_encode(`${response.data.username}`);
                 sessionStorage.setItem('authToken', authToken);
                 auth.login()
                 
                 if (response.data.designation === 'doctor')
-                    navigate('/doctorhome',{state : { username: userid }});
+                    navigate('/doctorhome');
                     // navigate('/addequipment')
                 else
                     navigate('/staffhome')

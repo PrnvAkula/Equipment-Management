@@ -1,17 +1,24 @@
 function Table({data}){
-    function slicingDate(data){
-    for (let i = 0; i < data.length; i++) {
-        data[i].date = (data[i].date).slice(6,16);
-      }
-      return data;
 
-    }
-    data = slicingDate(data);
+    
+    // function formatDate(dateString) {
+    //     const date = new Date(dateString);
+    //     const year = date.getFullYear();
+    //     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+    //     const day = date.getDate().toString().padStart(2, '0');
+    //     return `${day}-${month}-${year}`;
+    //   }
+    // data = data.map((row) => {
+    //     row.date = formatDate(row.date);
+    //     return row;
+    // });
+        
     return (
         <div>
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        
                         <th scope="col">#</th>
                         <th scope="col">Branch</th>
                         <th scope="col">Doctor</th>

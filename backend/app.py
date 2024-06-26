@@ -77,7 +77,6 @@ def login():
     data = request.get_json()
     userid = data['userid']
     password = data['password']
-
     user = None
     user = Registration.query.filter_by(userid=userid).first()
     if user and check_password_hash(user.password_hash, password):
@@ -132,5 +131,31 @@ def get_data():
             } for row in data]  # Adjust to include all necessary fields
     return jsonify(result)
 
+@app.route('/data/<userId>', methods=['GET'])
+def get_items_by_user(userId):
+    data = BookingsTB.query.filter_by(userid=userId).all()
+    if len(data) == 0:
+        return jsonify({'message': 'You Have No Bookings'}), 404
+    result = [{'id': row.id,
+            'userid': row.userid,
+            'branch': row.branch,
+            'ename': row.ename,
+            'surgeryType': row.surgeryType,
+            'fromTime': row.fromTime,
+            'toTime': row.toTime,
+            'date': row.date
+            } for row in data] # Adjust fields as necessary
+    return jsonify(result)
+
+@app.route('/bookings/<int:Id>', methods=['DELETE'])
+def delete_booking(Id):
+    booking = BookingsTB.query.filter_by(id = Id).first()
+    
+    if booking:
+        db.session.delete(booking)
+        db.session.commit()
+        return jsonify({'message': 'Booking deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'Booking not found'}), 404
 if __name__ == '__main__':
     app.run(debug=True)

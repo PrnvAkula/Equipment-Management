@@ -14,10 +14,8 @@ export default function Alerts ({error }) {
       );
 }
 
-export function Toasts ({error, type, setError}) {
-  function onClose(){
-    setError('');
-  }
+export function Toasts ({error, type, onClose}) {
+  
   return (
       
       <>
