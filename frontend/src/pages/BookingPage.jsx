@@ -87,6 +87,7 @@ function BookingPage() {
                         Equipment Name:
                         {/* <input type="text" value={ename} onChange={handleChange} /> */}
                         <select onChange={handleEnameChange} value={ename}>
+                            <option value="">Select Equipment</option>
                             {equipments.map((equipment, index) => (
                                 <option key={index} value={equipment.equipment}>{equipment.equipment}</option>
                             ))}

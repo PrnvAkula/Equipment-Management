@@ -16,7 +16,6 @@ function DeleteBooking(){
     useEffect(() => {
         fetch(`http://127.0.0.1:5000/data/${userId}`)
           .then(response => response.json())
-            
           .then(data => {setData(data)
             setError(data.message)
           })

@@ -18,12 +18,14 @@ function DeleteTable({data ,errorr, afterDelete}){
           setSelectedRows(selectedRows.filter(selectedRow => selectedRow.id !== row.id));
         }
       }
-      
         function handleDelete(){
             if (selectedRows.length === 0) {
                 setError('Please select atleast one Booking to delete');
                 return;
             }
+            const isConfirmed = window.confirm("Are you sure you want to delete these bookings?");
+            if (isConfirmed) {
+            
             selectedRows.forEach(row => {
             fetch(`http://127.0.0.1:5000/bookings/${row.id}`, { method: 'DELETE' })
                 .then(response => {
@@ -31,16 +33,20 @@ function DeleteTable({data ,errorr, afterDelete}){
                     setSelectedRows(selectedRows.filter(selectedRow => selectedRow.id !== row.id));
                     setSuccess('Bookings deleted successfully');
                     setError('');
+                    window.location.reload();
                     } else {
                     setError('Failed to delete item');
                     setSuccess('');
-                    
+
                     }
                 })
                 .catch(error => console.error('Error:', error));
-                afterDelete(row.id);
+                // afterDelete(row.id);
             });
-            
+        }
+        else {
+            console.log("Delete operation was canceled by the user.");
+        }
   };
         
     return (

@@ -124,18 +124,27 @@ def booking():
     #     # Check for overlap
     #     if (request_from_time < existing_to_time and request_to_time > existing_from_time):
     #         return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
-    request_start_datetime = datetime.strptime(startDate + " " + fromTime, '%Y-%m-%d %H:%M')
-    request_end_datetime = datetime.strptime(endDate + " " + toTime, '%Y-%m-%d %H:%M')
-    existing_bookings = BookingsTB.query.filter_by(ename=ename).all()
 
-    for booking in existing_bookings:
-        # Convert stored strings to datetime objects
-        existing_start_datetime = datetime.strptime(booking.startDate + " " + booking.fromTime, '%d-%m-%Y %H:%M')
-        existing_end_datetime = datetime.strptime(booking.endDate + " " + booking.toTime, '%d-%m-%Y %H:%M')
 
-        # Check for overlap
-        if (request_start_datetime < existing_end_datetime and request_end_datetime > existing_start_datetime):
-            return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
+
+
+    # request_start_datetime = datetime.strptime(startDate + " " + fromTime, '%Y-%m-%d %H:%M')
+    # request_end_datetime = datetime.strptime(endDate + " " + toTime, '%Y-%m-%d %H:%M')
+    # existing_bookings = BookingsTB.query.filter_by(ename=ename).all()
+
+    # for booking in existing_bookings:
+    #     # Convert stored strings to datetime objects
+    #     # existing_start_datetime = datetime.strptime(booking.startDate + " " + booking.fromTime, '%d-%m-%Y %H:%M')
+    #     existing_end_datetime = datetime.strptime(booking.endDate + " " + booking.toTime, '%d-%m-%Y %H:%M')
+    #     existing_start_datetime = datetime.strptime(booking.startDate.strftime('%d-%m-%Y') + " " + booking.fromTime, '%d-%m-%Y %H:%M')
+    #     # Check for overlap
+    #     if (request_start_datetime < existing_end_datetime and request_end_datetime > existing_start_datetime):
+    #         return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
+
+
+
+
+
 
     #If no overlap, add the new booking
 
