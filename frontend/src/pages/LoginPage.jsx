@@ -22,14 +22,10 @@ function LoginPage() {
                 const authToken = base64_encode(`${response.data.username}`);
                 sessionStorage.setItem('authToken', authToken);
                 auth.login()
-                
                 if (response.data.designation === 'doctor')
                     navigate('/doctorhome');
-                    // navigate('/addequipment')
                 else
                     navigate('/staffhome')
-
-            
             })
             .catch(error => {
                 console.error('Login failed', error.response.data);

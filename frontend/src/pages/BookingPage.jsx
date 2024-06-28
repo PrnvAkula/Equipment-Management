@@ -17,8 +17,7 @@ function BookingPage() {
     const [fromTime, setFromTime] = useState('00:00');
     const [toTime, setToTime] = useState('12:00');
     const [surgeryType, setSurgeryType] = useState('');
-    const username = base64_decode(sessionStorage.getItem('authToken'));
-    const userId = username;
+    const username = base64_decode(sessionStorage.getItem('authToken'))
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [equipments, setEquipments] = useState([]);
@@ -26,21 +25,11 @@ function BookingPage() {
     useEffect(() => {
         fetch('http://127.0.0.1:5000/equipment')
           .then(response => response.json())
-          .then(data => setEquipments(data))
+          .then(data =>{ setEquipments(data)
+          })
           .catch(error => console.log('Error fetching data:', error));
-
-        //   fetch(`http://127.0.0.1:5000/login/${userId}`)
-        //   .then(response => {
-        //     console.log(response.data.designation)
-        //     if(response.data.designation !== 'doctor'){
-        //         window.location.href = '/staffhome';
-        //     }
-            
-        // })
-        // .catch(error => {
-        //     console.error('Login failed', error.response.data);
-        // });
-      }, [userId]);
+          
+      }, []);
  
         
     function onClose(){
@@ -51,6 +40,7 @@ function BookingPage() {
         event.preventDefault();
         try {
             console.log(todaydate);
+            console.log(fromTime);
             const response = await axios.post('http://127.0.0.1:5000/booking', { username, branch, ename, startDate, endDate, fromTime, toTime, surgeryType});
             console.log('Response:', response.data);
             const message = response.data.message || 'Equipment added successfully';

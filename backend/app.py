@@ -2,13 +2,14 @@
 from flask import Flask, request, jsonify
 from json import JSONEncoder
 from flask_sqlalchemy import SQLAlchemy
+# from sqlalchemy import cast, Time
 from flask_cors import CORS  
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-
+import pytz
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS
+CORS(app)  
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -34,6 +35,8 @@ class BookingsTB(db.Model):
         self.startDate = startDate
         self.endDate = endDate
 
+    
+
 class Registration(db.Model):
     userid = db.Column(db.String(100), nullable=False, primary_key=True)
     password_hash = db.Column(db.String(300), nullable=False)
@@ -53,9 +56,29 @@ class Equipment(db.Model):
 with app.app_context():
     db.create_all()
 
+today = datetime.now(pytz.timezone('Asia/Kolkata')).date()
+now = datetime.now(pytz.timezone('Asia/Kolkata')).time() 
+time_str = now.strftime('%H:%M')
+time = datetime.strptime(f"{today} {time_str}", '%Y-%m-%d %H:%M').time()
+
+def delete_expired_bookings():
+    expired_bookings = BookingsTB.query.filter(BookingsTB.endDate < today).all()
+
+    for booking in expired_bookings:
+        db.session.delete(booking)
+
+    for bookings in (BookingsTB.query.filter(BookingsTB.endDate == today).all()):
+        xtime = datetime.strptime(f"{bookings.toTime}", '%H:%M').time()
+        if (xtime) < time:
+            db.session.delete(bookings)
+        
+    db.session.commit()
+    sorted_events = BookingsTB.query.order_by(BookingsTB.startDate).all()
+
 
 @app.route('/register', methods=['POST'])
 def register_user():
+
     data = request.get_json()
     userid = data.get('userid')
     password = data.get('password')
@@ -105,27 +128,49 @@ def booking():
     startDate = data['startDate']
     endDate = data['endDate']
 
+    from_time = datetime.strptime(f"{fromTime}", '%H:%M').time()
+    to_time = datetime.strptime(f"{toTime}", '%H:%M').time()
     if not branch:
-        return jsonify({'error' : 'branch field cannot be empty'}),400
+        return jsonify({'error' : 'Branch field cannot be empty'}),400
     if not ename:
-        return jsonify({'error' : 'equipment field cannot be empty'}),400
+        return jsonify({'error' : 'Equipment field cannot be empty'}),400
     if not surgeryType:
         return jsonify({'error': 'Surgery Type cannot be empty'}), 400
+    # Checks if the dates are not in the past but it's either today or future date
+    try:
+            inputStartDate = datetime.strptime(startDate, '%Y-%m-%d').date()
+    except ValueError:
+            return jsonify({'error': 'Invalid date format. Please use YYYY-MM-DD format.'}), 400
+    try:
+            inputEndDate = datetime.strptime(endDate, '%Y-%m-%d').date()
+    except ValueError:
+            return jsonify({'error': 'Invalid date format. Please use YYYY-MM-DD format.'}), 400
+    if inputStartDate < today:
+        return jsonify({'error': 'The \'Start\' date cannot be in the past. Please select today\'s date or a future date.'}), 400
+    if inputEndDate < today:
+        return jsonify({'error': 'The \'End\' date cannot be in the past. Please select today\'s date or a future date.'}), 400
+
+    # Checks if the 'End' date is not before the 'Start' date
+    if inputEndDate < inputStartDate:
+        return jsonify({'error': 'The \'End\' date cannot be before the \'Start\' date.'}), 400
+    
+    if inputEndDate == inputStartDate and from_time >= to_time:
+        return jsonify({'error': 'The \'To\' time cannot be before the \'Start\' time.'}), 400
+    
+    if (inputStartDate == today) and from_time < time:
+        return jsonify({'error': 'The \'From\' time cannot be before the current Time. Please select a future time.'}), 400
 
     # existing_bookings = BookingsTB.query.filter_by(ename=ename, startDate=startDate,endDate=endDate).all()
-
     # for booking in existing_bookings:
     #     # Convert stored string times to datetime.time objects
     #     existing_from_time = datetime.strptime(booking.fromTime, '%H:%M').time()
-    #     existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
+        # existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
     #     request_from_time = datetime.strptime(fromTime, '%H:%M').time()
     #     request_to_time = datetime.strptime(toTime, '%H:%M').time()
 
     #     # Check for overlap
     #     if (request_from_time < existing_to_time and request_to_time > existing_from_time):
     #         return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
-
-
 
 
     # request_start_datetime = datetime.strptime(startDate + " " + fromTime, '%Y-%m-%d %H:%M')
@@ -141,24 +186,20 @@ def booking():
     #     if (request_start_datetime < existing_end_datetime and request_end_datetime > existing_start_datetime):
     #         return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
 
-
-
-
-
-
-    #If no overlap, add the new booking
-
-
     new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate)
     db.session.add(new_equipment)
     db.session.commit()
     return jsonify({'message': 'Equipment Booked successfully'}), 201
 
 
-
 @app.route('/data', methods=['GET'])
 def get_data():
+    delete_expired_bookings() 
     data = BookingsTB.query.all()
+    # data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time))).all()
+    # data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), (cast(BookingsTB.toTime, Time))).all()
+    if len(data) == 0:
+        return jsonify({'message': 'There are No Bookings'}), 404
     result = [{'id': row.id,
             'userid': row.userid,
             'branch': row.branch,
@@ -168,12 +209,15 @@ def get_data():
             'fromTime': row.fromTime,
             'endDate': row.endDate,
             'toTime': row.toTime
-            } for row in data]  # Adjust to include all necessary fields
+            } for row in data]  
     return jsonify(result)
 
 @app.route('/data/<userId>', methods=['GET'])
 def get_items_by_user(userId):
     data = BookingsTB.query.filter_by(userid=userId).all()
+    # data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time))).filter_by(userid = userId).all()
+    # data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)), (cast(BookingsTB.toTime, Time) )).filter_by(userid = userId).all()
+
     if len(data) == 0:
         return jsonify({'message': 'You Have No Bookings'}), 404
     result = [{'id': row.id,
@@ -185,7 +229,7 @@ def get_items_by_user(userId):
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime
-            } for row in data] # Adjust fields as necessary
+            } for row in data] 
     return jsonify(result)
 
 @app.route('/bookings/<int:Id>', methods=['DELETE'])
@@ -222,18 +266,20 @@ def delete_equipment(Id):
     
 @app.route('/equipment', methods=['GET'])
 def get_equipment():
-    data = Equipment.query.all()
+    # data = Equipment.query.all()
+    data = Equipment.query.order_by(Equipment.equipment).all()
+
     result = [{'id': row.id,
             'equipment': row.equipment
             } for row in data]
     return jsonify(result)
-@app.route('/login/<userId>', methods=['GET'])
-def logincheck(userId):
-    user = Registration.query.filter_by(userid=userId).first()
+# @app.route('/login/<userId>', methods=['GET'])
+# def logincheck(userId):
+#     user = Registration.query.filter_by(userid=userId).first()
 
-    if user :
-        return jsonify({'message': 'UserThere' , 'username' : user.userid , 'designation' : user.designation}), 200
-    else:
-        return jsonify({'message': 'Invalid userid or password'}), 401
+#     if user :
+#         return jsonify({'message': 'UserThere' , 'username' : user.userid , 'designation' : user.designation}), 200
+#     else:
+#         return jsonify({'message': 'Invalid userid or password'}), 401
 if __name__ == '__main__':
     app.run(debug=True)
