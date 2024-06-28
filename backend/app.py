@@ -227,6 +227,13 @@ def get_equipment():
             'equipment': row.equipment
             } for row in data]
     return jsonify(result)
+@app.route('/login/<userId>', methods=['GET'])
+def logincheck(userId):
+    user = Registration.query.filter_by(userid=userId).first()
 
+    if user :
+        return jsonify({'message': 'UserThere' , 'username' : user.userid , 'designation' : user.designation}), 200
+    else:
+        return jsonify({'message': 'Invalid userid or password'}), 401
 if __name__ == '__main__':
     app.run(debug=True)

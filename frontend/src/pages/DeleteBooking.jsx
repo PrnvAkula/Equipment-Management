@@ -20,6 +20,17 @@ function DeleteBooking(){
             setError(data.message)
           })
           .catch(error => console.error('Error:', error));
+        // fetch(`http://127.0.0.1:5000/login/${userId}`)
+        //   .then(response => {
+        //     console.log(response.data.designation)
+        //     if(response.data.designation !== 'doctor'){
+        //         window.location.href = '/staffhome';
+        //     }
+            
+        // })
+        // .catch(error => {
+        //     console.error('Login failed', error.response.data);
+        // });
       }, [userId]);
 
       function afterDelete(id){

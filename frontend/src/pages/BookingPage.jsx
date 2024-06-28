@@ -18,6 +18,7 @@ function BookingPage() {
     const [toTime, setToTime] = useState('12:00');
     const [surgeryType, setSurgeryType] = useState('');
     const username = base64_decode(sessionStorage.getItem('authToken'));
+    const userId = username;
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [equipments, setEquipments] = useState([]);
@@ -27,7 +28,19 @@ function BookingPage() {
           .then(response => response.json())
           .then(data => setEquipments(data))
           .catch(error => console.log('Error fetching data:', error));
-      }, []);
+
+        //   fetch(`http://127.0.0.1:5000/login/${userId}`)
+        //   .then(response => {
+        //     console.log(response.data.designation)
+        //     if(response.data.designation !== 'doctor'){
+        //         window.location.href = '/staffhome';
+        //     }
+            
+        // })
+        // .catch(error => {
+        //     console.error('Login failed', error.response.data);
+        // });
+      }, [userId]);
  
         
     function onClose(){
