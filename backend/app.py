@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify
 from json import JSONEncoder
 from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy import cast, Time
+from sqlalchemy import cast, Time
 from flask_cors import CORS  
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -73,7 +73,7 @@ def delete_expired_bookings():
             db.session.delete(bookings)
         
     db.session.commit()
-    sorted_events = BookingsTB.query.order_by(BookingsTB.startDate).all()
+
 
 
 @app.route('/register', methods=['POST'])
@@ -108,7 +108,6 @@ def login():
     data = request.get_json()
     userid = data['userid']
     password = data['password']
-    user = None
     user = Registration.query.filter_by(userid=userid).first()
     if user and check_password_hash(user.password_hash, password):
         return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation}), 200
@@ -195,9 +194,9 @@ def booking():
 @app.route('/data', methods=['GET'])
 def get_data():
     delete_expired_bookings() 
-    data = BookingsTB.query.all()
+    # data = BookingsTB.query.all()
     # data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time))).all()
-    # data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), (cast(BookingsTB.toTime, Time))).all()
+    data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
     if len(data) == 0:
         return jsonify({'message': 'There are No Bookings'}), 404
     result = [{'id': row.id,
@@ -214,9 +213,9 @@ def get_data():
 
 @app.route('/data/<userId>', methods=['GET'])
 def get_items_by_user(userId):
-    data = BookingsTB.query.filter_by(userid=userId).all()
+    # data = BookingsTB.query.filter_by(userid=userId).all()
     # data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time))).filter_by(userid = userId).all()
-    # data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)), (cast(BookingsTB.toTime, Time) )).filter_by(userid = userId).all()
+    data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)),BookingsTB.endDate, (cast(BookingsTB.toTime, Time) )).filter_by(userid = userId).all()
 
     if len(data) == 0:
         return jsonify({'message': 'You Have No Bookings'}), 404
@@ -273,13 +272,41 @@ def get_equipment():
             'equipment': row.equipment
             } for row in data]
     return jsonify(result)
-# @app.route('/login/<userId>', methods=['GET'])
-# def logincheck(userId):
-#     user = Registration.query.filter_by(userid=userId).first()
 
-#     if user :
-#         return jsonify({'message': 'UserThere' , 'username' : user.userid , 'designation' : user.designation}), 200
-#     else:
-#         return jsonify({'message': 'Invalid userid or password'}), 401
+@app.route('/Sortby')
+def sort_by():
+    sort_by = request.args.get('sort_by', '')  
+    sort = request.args.get('sort', '')
+
+    if sort:
+        if sort_by == 'Date':
+            query = BookingsTB.query.filter(BookingsTB.startDate == sort)
+        elif sort_by == 'Branch':
+            query = BookingsTB.query.filter(BookingsTB.branch == sort)
+        elif sort_by == 'Equipment':
+            query = BookingsTB.query.filter(BookingsTB.ename == sort)  
+    else:
+        if sort_by == 'Date':
+            query = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time)))
+        elif sort_by == 'Branch':
+            query = BookingsTB.query.order_by(BookingsTB.branch)
+        elif sort_by == 'Equipment':
+            query = BookingsTB.query.order_by(BookingsTB.ename)
+
+
+    sorted_items = query.all()
+    result = [{'id': row.id,
+            'userid': row.userid,
+            'branch': row.branch,
+            'ename': row.ename,
+            'surgeryType': row.surgeryType,
+            'startDate': row.startDate.strftime('%a, %d %b %Y'),
+            'fromTime': row.fromTime,
+            'endDate': row.endDate.strftime('%a, %d %b %Y'),
+            'toTime': row.toTime
+            } for row in sorted_items]
+    return jsonify(result)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
