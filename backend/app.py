@@ -66,14 +66,16 @@ def delete_expired_bookings():
 
     for booking in expired_bookings:
         db.session.delete(booking)
-
-    for bookings in (BookingsTB.query.filter(BookingsTB.endDate == today).all()):
-        xtime = datetime.strptime(f"{bookings.toTime}", '%H:%M').time()
-        if (xtime) < time:
-            db.session.delete(bookings)
         
     db.session.commit()
 
+def delete_expired_booking():
+    for bookings in (BookingsTB.query.filter(BookingsTB.endDate == today).all()):
+        xtime = datetime.strptime(f"{bookings.toTime}", '%H:%M').time()
+        if (xtime) <= time:
+            db.session.delete(bookings)
+        
+    db.session.commit()
 
 
 @app.route('/register', methods=['POST'])
@@ -111,6 +113,8 @@ def login():
     user = Registration.query.filter_by(userid=userid).first()
     if user and check_password_hash(user.password_hash, password):
         return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation}), 200
+        delete_expired_bookings()
+        delete_expired_booking()
     else:
         return jsonify({'message': 'Invalid userid or password'}), 401
  
@@ -193,7 +197,8 @@ def booking():
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    delete_expired_bookings() 
+    # delete_expired_bookings()
+    # delete_expired_booking() 
     # data = BookingsTB.query.all()
     # data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time))).all()
     data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
@@ -265,6 +270,8 @@ def delete_equipment(Id):
     
 @app.route('/equipment', methods=['GET'])
 def get_equipment():
+    # delete_expired_bookings()
+    # delete_expired_booking()
     # data = Equipment.query.all()
     data = Equipment.query.order_by(Equipment.equipment).all()
 
@@ -273,18 +280,39 @@ def get_equipment():
             } for row in data]
     return jsonify(result)
 
+@app.route('/equipment/<ename>', methods=['GET'])
+def get_equipment_by_id(ename):
+    equipment = BookingsTB.query.filter_by(ename = ename).all()
+    if equipment:
+        
+        result = [{'id': row.id,
+            'userid': row.userid,
+            'branch': row.branch,
+            'ename': row.ename,
+            'surgeryType': row.surgeryType,
+            'startDate': row.startDate.strftime('%a, %d %b %Y'),
+            'fromTime': row.fromTime,
+            'endDate': row.endDate.strftime('%a, %d %b %Y'),
+            'toTime': row.toTime
+            } for row in equipment]
+        return jsonify(result)
+    else:
+        return jsonify({'message': f'There are no Bookings for {ename}'}), 404
+    
+
 @app.route('/Sortby')
 def sort_by():
     sort_by = request.args.get('sort_by', '')  
     sort = request.args.get('sort', '')
 
     if sort:
+
         if sort_by == 'Date':
             query = BookingsTB.query.filter(BookingsTB.startDate == sort)
         elif sort_by == 'Branch':
             query = BookingsTB.query.filter(BookingsTB.branch == sort)
         elif sort_by == 'Equipment':
-            query = BookingsTB.query.filter(BookingsTB.ename == sort)  
+            query = BookingsTB.query.filter(BookingsTB.ename == sort) 
     else:
         if sort_by == 'Date':
             query = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time)))
@@ -292,9 +320,21 @@ def sort_by():
             query = BookingsTB.query.order_by(BookingsTB.branch)
         elif sort_by == 'Equipment':
             query = BookingsTB.query.order_by(BookingsTB.ename)
+        # elif sort_by == "Sort":
+        #     query = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time)))
 
 
+    
     sorted_items = query.all()
+    if sort_by == 'Date':
+        if len(sorted_items) == 0:
+            return jsonify({'message': f'There are No Bookings on {sort}'}), 404
+    elif sort_by == 'Branch':
+        if len(sorted_items) == 0:
+            return jsonify({'message': f'There are No Bookings for {sort}'}), 404
+    elif sort_by == 'Equipment':
+        if len(sorted_items) == 0:
+            return jsonify({'message': f'There are No Bookings for {sort}'}), 404
     result = [{'id': row.id,
             'userid': row.userid,
             'branch': row.branch,
@@ -306,6 +346,7 @@ def sort_by():
             'toTime': row.toTime
             } for row in sorted_items]
     return jsonify(result)
+
 
 
 if __name__ == '__main__':

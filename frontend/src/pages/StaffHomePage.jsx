@@ -5,6 +5,7 @@ import TabsExample from '../components/Nav';
 // import { decode as base64_decode } from 'base-64';
 import Alerts from '../components/Alerts';
 
+
 function StaffHome() {
   // const username = base64_decode(sessionStorage.getItem('authToken'));
   const [equipments, setEquipments] = useState([]);
@@ -12,7 +13,7 @@ function StaffHome() {
 
   const [data, setData] = useState([]);
   const [sorter, setSorter] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState('Date');
 
   const handleSortChange = (event) => {
     setSortBy(event.target.value);
@@ -44,7 +45,10 @@ function StaffHome() {
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/Sortby?sort_by=${sortBy}&sort=${sorter}`)
       .then(response => response.json())
-      .then(data => setData(data))
+      .then(data => {setData(data)
+        console.log(data.message)
+        setError(data.message)
+      })
       .catch(error => console.error('Error fetching inventory:', error));
   }, [sortBy, sorter]);
 
@@ -55,11 +59,10 @@ function StaffHome() {
       op2 = {'Manage Equipment'}
       op1href = {'/staffhome'}
       op2href = {'/manageequipment'} />
-      {error && <Alerts error = {error}/>}
 
       Sort By:
       <select onChange={handleSortChange} value={sortBy}>
-        <option value="">Sort</option>
+
         <option value="Date">Date</option>
         <option value="Branch">Branch</option>
         <option value="Equipment">Equipment</option>
@@ -75,12 +78,13 @@ function StaffHome() {
       {sortBy === 'Equipment' &&  <select onChange={handleEnameChange} value={sorter}>
                                       <option value="">Select Equipment</option>
                                       {equipments.map((equipment, index) => (
-                                          <option key={index} value={equipment.equipment}>{equipment.equipment}</option>
-                                      ))}
+                                        <option key={index} value={equipment.equipment}>{equipment.equipment}</option>
+                                        ))}
                                   </select>}
       
 
-      <Table data = {data}/>
+      {error && <Alerts error = {error}/>}
+      {!error &&<Table data = {data}/>}
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import React, { useState , useEffect} from 'react';
 import TabsExample from '../components/Nav';
 import axios from 'axios';
-
 import Details from '../components/Details';
 import { Toasts } from '../components/Alerts';
 import { decode as base64_decode } from 'base-64';
+import Alerts from '../components/Alerts';
 // import Button from 'react-bootstrap/Button';
 function BookingPage() {
     const today = new Date();
@@ -21,6 +21,8 @@ function BookingPage() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [equipments, setEquipments] = useState([]);
+    const [data, setData] = useState([]);
+    const [errorr, setErrorr] = useState('');
 
     useEffect(() => {
         fetch('http://127.0.0.1:5000/equipment')
@@ -30,6 +32,14 @@ function BookingPage() {
           .catch(error => console.log('Error fetching data:', error));
           
       }, []);
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5000/equipment/${ename}`)
+        .then(response => response.json())
+        .then(data =>{ setData(data)
+            setErrorr(data.message)
+        })
+        .catch(error => console.log('Error fetching data:', error));
+    }, [ename]);
  
         
     function onClose(){
@@ -114,7 +124,46 @@ function BookingPage() {
             />
         }    
         <button className='but' onClick={handleSubmit} type="submit">Submit</button>
-            
+        <br/>
+        <br/>
+        
+        {errorr && <div><h1>Active Bookings For {ename}</h1>  <Alerts error = {errorr}/></div>}
+        
+        {!errorr && data.length > 0 &&
+        <div>
+            <h1>Active Bookings For {ename}</h1>
+            <div>
+                <table className="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Branch</th>
+                            <th scope="col">Equipment</th>
+                            <th scope="col">Surgery Type</th>
+                            <th scope="col">Start Date</th>           
+                            <th scope="col">From </th>
+                            <th scope="col">End Date </th>
+                            <th scope="col">To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {data.map((row, index) => (
+                        <tr key={index}>
+                        <th scope="row">{index+1}</th>
+                        <td>{row.branch}</td>
+                        <td>{row.ename}</td>
+                        <td>{row.surgeryType}</td>
+                        <td>{row.startDate}</td>
+                        <td>{row.fromTime}</td>
+                        <td>{row.endDate}</td>
+                        <td>{row.toTime}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        }
 
         </div>
        
