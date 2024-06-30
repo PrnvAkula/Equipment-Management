@@ -163,17 +163,15 @@ def booking():
     if (inputStartDate == today) and from_time < time:
         return jsonify({'error': 'The \'From\' time cannot be before the current Time. Please select a future time.'}), 400
 
-    # existing_bookings = BookingsTB.query.filter_by(ename=ename, startDate=startDate,endDate=endDate).all()
-    # for booking in existing_bookings:
-    #     # Convert stored string times to datetime.time objects
-    #     existing_from_time = datetime.strptime(booking.fromTime, '%H:%M').time()
-        # existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
-    #     request_from_time = datetime.strptime(fromTime, '%H:%M').time()
-    #     request_to_time = datetime.strptime(toTime, '%H:%M').time()
+    existing_bookings1 = BookingsTB.query.filter_by(ename=ename, startDate=startDate,endDate=endDate).all()
+    for booking in existing_bookings1:
+    
+        existing_from_time = datetime.strptime(booking.fromTime, '%H:%M').time()
+        existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
 
-    #     # Check for overlap
-    #     if (request_from_time < existing_to_time and request_to_time > existing_from_time):
-    #         return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
+        # Check for overlap
+        if (from_time < existing_to_time and to_time > existing_from_time):
+            return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
 
 
     # request_start_datetime = datetime.strptime(startDate + " " + fromTime, '%Y-%m-%d %H:%M')
@@ -199,8 +197,6 @@ def booking():
 def get_data():
     # delete_expired_bookings()
     # delete_expired_booking() 
-    # data = BookingsTB.query.all()
-    # data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time))).all()
     data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
     if len(data) == 0:
         return jsonify({'message': 'There are No Bookings'}), 404
