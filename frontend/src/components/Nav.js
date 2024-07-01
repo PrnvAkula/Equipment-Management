@@ -6,10 +6,14 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Logo from './Logo';
 
+
 function TabsExample({ op1, op2, op1href, op2href ,defhref}) {
+
     function handleSignOut() {
+
         sessionStorage.removeItem('authToken');
         window.location.reload();
+ 
     }
     return (
         <Container fluid className="navbar-bg">

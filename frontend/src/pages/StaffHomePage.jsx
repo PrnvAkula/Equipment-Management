@@ -8,8 +8,11 @@ import Alerts from '../components/Alerts';
 
 function StaffHome() {
   // const username = base64_decode(sessionStorage.getItem('authToken'));
+  
+
   const [equipments, setEquipments] = useState([]);
   const [error, setError] = useState('');
+
 
   const [data, setData] = useState([]);
   const [sorter, setSorter] = useState('');

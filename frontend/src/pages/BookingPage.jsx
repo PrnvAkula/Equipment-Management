@@ -5,11 +5,13 @@ import Details from '../components/Details';
 import { Toasts } from '../components/Alerts';
 import { decode as base64_decode } from 'base-64';
 import Alerts from '../components/Alerts';
+
 // import Button from 'react-bootstrap/Button';
+
 function BookingPage() {
-    const today = new Date();
+
+    const today = new Date();            
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>10 ? '-' : '-0') +  (today.getMonth() + 1 ) + '-' + today.getDate();
-  
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
     const [startDate, setStartDate] = useState(`${todaydate}`);  
@@ -24,6 +26,7 @@ function BookingPage() {
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
 
+    
     useEffect(() => {
         fetch('http://127.0.0.1:5000/equipment')
           .then(response => response.json())

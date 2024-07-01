@@ -15,20 +15,20 @@ import ManageEquipment from './pages/ManageEquipment';
 function App() {
     return (
         <div className="App">
-            <Router>
-                <AuthProvider>
-                <Routes>
-                    <Route exact path="/register" element={<RegisterUser/>} />
-                    <Route exact path="*" element={<NotFound/>} />
-                    <Route exact path="/staffhome" element={<RequireAuth><StaffHome /></RequireAuth>} />
-                    <Route exact path="/doctorhome" element={<RequireAuth><BookingPage /></RequireAuth>} />
-                    <Route exact path="/" element={<LoginPage/>} />
-                    <Route exact path="/deletebooking" element = {<RequireAuth><DeleteBooking/></RequireAuth>}/>
-                    <Route exact path="/manageequipment" element = {<RequireAuth><ManageEquipment/></RequireAuth>}/>
+            <AuthProvider>
+                <Router>
+                    <Routes>
+                        <Route exact path="/register" element={<RegisterUser/>} />
+                        <Route exact path="*" element={<NotFound/>} />
+                        <Route exact path="/staffhome" element={<RequireAuth><StaffHome /></RequireAuth>} />
+                        <Route exact path="/doctorhome" element={<RequireAuth><BookingPage /></RequireAuth>} />
+                        <Route exact path="/" element={<LoginPage/>} />
+                        <Route exact path="/deletebooking" element = {<RequireAuth><DeleteBooking/></RequireAuth>}/>
+                        <Route exact path="/manageequipment" element = {<RequireAuth><ManageEquipment/></RequireAuth>}/>
 
-                </Routes>
-                </AuthProvider>
-            </Router>
+                    </Routes>
+                </Router>
+            </AuthProvider>
         </div>
     );
 }

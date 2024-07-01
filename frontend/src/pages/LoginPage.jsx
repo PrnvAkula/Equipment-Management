@@ -26,6 +26,7 @@ function LoginPage() {
                     navigate('/doctorhome');
                 else
                     navigate('/staffhome')
+                
             })
             .catch(error => {
                 console.error('Login failed', error.response.data);

@@ -5,10 +5,14 @@ import DeleteTable from '../components/DeleteTable';
 import Alerts from '../components/Alerts';
 
 
+
+
 function DeleteBooking(){
+
+
     const [data, setData] = useState([]);
-    const user = sessionStorage.getItem('authToken')
-    const username = base64_decode(user);
+    const user1 = sessionStorage.getItem('authToken')
+    const username = base64_decode(user1);
     const userId = username;
     const [error, setError] = useState('');
 
@@ -43,8 +47,8 @@ function DeleteBooking(){
             op2= {'Delete Booking'}
             op1href = {'/doctorhome'}
             op2href = {'/deletebooking'} />
-        {error && <Alerts error = {error}/>}
         <DeleteTable data = {data} errorr ={error} afterDelete = {afterDelete}/>
+        {error && <Alerts error = {error}/>}
         
 
         </>

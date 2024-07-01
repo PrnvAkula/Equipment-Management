@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Alerts, {Success} from '../components/Alerts';
 
+
 function ManageEquipment() {
     const [newEquipment, setNewEquipment] = useState('');
     const [equipments, setEquipments] = useState([]);

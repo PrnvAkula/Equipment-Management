@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import cast, Time
 from flask_cors import CORS  
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta, date
 import pytz
 
 app = Flask(__name__)
@@ -112,9 +112,9 @@ def login():
     password = data['password']
     user = Registration.query.filter_by(userid=userid).first()
     if user and check_password_hash(user.password_hash, password):
-        return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation}), 200
         delete_expired_bookings()
         delete_expired_booking()
+        return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation}), 200
     else:
         return jsonify({'message': 'Invalid userid or password'}), 401
  
@@ -158,34 +158,54 @@ def booking():
         return jsonify({'error': 'The \'End\' date cannot be before the \'Start\' date.'}), 400
     
     if inputEndDate == inputStartDate and from_time >= to_time:
-        return jsonify({'error': 'The \'To\' time cannot be before the \'Start\' time.'}), 400
+        return jsonify({'error': 'The \'To\' time cannot be before or Equal to the \'Start\' time.'}), 400
     
     if (inputStartDate == today) and from_time < time:
         return jsonify({'error': 'The \'From\' time cannot be before the current Time. Please select a future time.'}), 400
+    inputStart = datetime.combine(inputStartDate, from_time)
+    inputEnd = datetime.combine(inputEndDate, to_time)
+    cooldown = timedelta(hours=1)
+    existing_bookings = BookingsTB.query.filter_by(ename=ename).all()
+    for booking in existing_bookings:
+        coolStart = datetime.combine(datetime.strptime(f"{booking.startDate}", '%Y-%m-%d').date(), datetime.strptime(f"{booking.fromTime}", '%H:%M').time())
+        coolEnd = datetime.combine(datetime.strptime(f"{booking.endDate}", '%Y-%m-%d').date(), datetime.strptime(f"{booking.toTime}", '%H:%M').time())
+        if branch != booking.branch:
+            coolStart = (coolStart - cooldown)
+            coolEnd = (coolEnd + cooldown)
 
-    existing_bookings1 = BookingsTB.query.filter_by(ename=ename, startDate=startDate,endDate=endDate).all()
-    for booking in existing_bookings1:
-    
-        existing_from_time = datetime.strptime(booking.fromTime, '%H:%M').time()
-        existing_to_time = datetime.strptime(booking.toTime, '%H:%M').time()
 
-        # Check for overlap
-        if (from_time < existing_to_time and to_time > existing_from_time):
-            return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
+        if inputStart < coolEnd and inputEnd > coolStart:
+            return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
 
 
-    # request_start_datetime = datetime.strptime(startDate + " " + fromTime, '%Y-%m-%d %H:%M')
-    # request_end_datetime = datetime.strptime(endDate + " " + toTime, '%Y-%m-%d %H:%M')
-    # existing_bookings = BookingsTB.query.filter_by(ename=ename).all()
+        # if booking.startDate == inputStartDate and booking.endDate == inputEndDate:
+        #     if from_time < coolToTime and to_time > coolFromTime:
+        #         return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
+        
+        # if booking.startDate <= inputStartDate <= booking.endDate:
+        #     if from_time > coolFromTime :
+        #         return jsonify({'error': 'aThe equipment is already booked for the selected date and time'}), 400
+        # if booking.startDate <= inputEndDate <= booking.endDate:
+        #     if from_time < coolToTime:
+        #         return jsonify({'error': 'bThe equipment is already booked for the selected date and time'}), 400
+            
 
-    # for booking in existing_bookings:
-    #     # Convert stored strings to datetime objects
-    #     # existing_start_datetime = datetime.strptime(booking.startDate + " " + booking.fromTime, '%d-%m-%Y %H:%M')
-    #     existing_end_datetime = datetime.strptime(booking.endDate + " " + booking.toTime, '%d-%m-%Y %H:%M')
-    #     existing_start_datetime = datetime.strptime(booking.startDate.strftime('%d-%m-%Y') + " " + booking.fromTime, '%d-%m-%Y %H:%M')
-    #     # Check for overlap
-    #     if (request_start_datetime < existing_end_datetime and request_end_datetime > existing_start_datetime):
-    #         return jsonify({'error': 'Timings are clashing with other Bookings. Please select different timings and try again.'}), 400
+
+        # if inputStartDate <= booking.startDate <= inputEndDate:
+        #     if from_time < coolToTime and to_time > coolFromTime:
+        #         return jsonify({'error': 'cThe equipment is already booked for the selected date and time'}), 400
+        # if inputStartDate <= booking.endDate <= inputEndDate:
+        #     if from_time < coolToTime and to_time > coolFromTime:
+        #         return jsonify({'error': 'dThe equipment is already booked for the selected date and time'}), 400
+        # if inputStartDate == booking.startDate and inputEndDate == booking.endDate:
+        #     if from_time == coolToTime and to_time == coolFromTime:
+        #         return jsonify({'error': 'eThe equipment is already booked for the selected date and time'}), 400
+        # if inputStartDate == booking.startDate and inputEndDate == booking.endDate:
+        #     if from_time == coolToTime and to_time == coolFromTime:
+        #         return jsonify({'error': 'fThe equipment is already booked for the selected date and time'}), 400
+        
+            
+        
 
     new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate)
     db.session.add(new_equipment)
