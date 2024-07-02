@@ -5,14 +5,18 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Logo from './Logo';
-
+import useAuth from '../Util/Context';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function TabsExample({ op1, op2, op1href, op2href ,defhref}) {
-
+    const { setAuth } = useAuth();
+    const navigate = useNavigate();
     function handleSignOut() {
-
-        sessionStorage.removeItem('authToken');
-        window.location.reload();
+        setAuth({});
+        sessionStorage.removeItem('token');
+        navigate('/');
+        
  
     }
     return (
@@ -25,10 +29,14 @@ function TabsExample({ op1, op2, op1href, op2href ,defhref}) {
                     {/* <Nav variant="tabs" defaultActiveKey={"/home"} >  */}
                     <Nav variant="tabs"> 
                         <Nav.Item>
-                            <Nav.Link href={op1href} className="custom-nav-link">{op1}</Nav.Link>
+                            <Nav.Link>
+                                <Link to={op1href} className="custom-nav-link">{op1}</Link>
+                            </Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
-                            <Nav.Link href={op2href} className="custom-nav-link">{op2}</Nav.Link>
+                            <Nav.Link>
+                                <Link to={op2href} className="custom-nav-link">{op2}</Link>
+                            </Nav.Link>
                         </Nav.Item>
                     </Nav>
                 </Col>

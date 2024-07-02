@@ -1,20 +1,22 @@
-
-// import { useNavigate} from 'react-router-dom';
-import { useAuth } from './Context';
-import { Navigate } from 'react-router';
- 
+import { useLocation, Navigate, Outlet } from "react-router-dom";
+import useAuth from "./Context";
 
 
+const RequireAuth = ({ allowedRoles }) => {
+    const { auth } = useAuth();
+    const location = useLocation();
+   
 
-const RequireAuth = ({ children }) => {
+    
 
-  let auth = useAuth();
-  auth.isAuthenticated = sessionStorage.getItem('authToken') ? true : false;
 
-    if (!auth.isAuthenticated) {
-      return <Navigate to="/" />;
-    }
+    return (
+        auth?.roles === allowedRoles[0]
+        ? <Outlet />
+        : auth?.user ?<Navigate to="/unauthorized" state={{ from: location }} replace />
+          :  <Navigate to="/" state={{ from: location }} replace />
 
-  return children;
-};
+    );
+}
+
 export default RequireAuth;

@@ -3,8 +3,9 @@ import TabsExample from '../components/Nav';
 import axios from 'axios';
 import Details from '../components/Details';
 import { Toasts } from '../components/Alerts';
-import { decode as base64_decode } from 'base-64';
+
 import Alerts from '../components/Alerts';
+import { jwtDecode } from 'jwt-decode';
 
 // import Button from 'react-bootstrap/Button';
 
@@ -19,7 +20,7 @@ function BookingPage() {
     const [fromTime, setFromTime] = useState('00:00');
     const [toTime, setToTime] = useState('12:00');
     const [surgeryType, setSurgeryType] = useState('');
-    const username = base64_decode(sessionStorage.getItem('authToken'))
+    const username = jwtDecode(sessionStorage.getItem('token')).sub.id;
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [equipments, setEquipments] = useState([]);

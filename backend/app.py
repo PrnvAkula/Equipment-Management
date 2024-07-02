@@ -7,12 +7,15 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, date
 import pytz
+from flask_jwt_extended import JWTManager, create_access_token
 
 app = Flask(__name__)
 CORS(app)  
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = 'super-secret-E47C87FF-48EC-4FB2-ABDA-514CB4B1B365'
+jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
 class BookingsTB(db.Model):
@@ -114,9 +117,12 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         delete_expired_bookings()
         delete_expired_booking()
-        return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation}), 200
+        access_token = create_access_token(identity={'id': user.userid, 'role': user.designation})
+        # return jsonify(access_token=access_token)
+        return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation, 'access_token' : access_token}), 200
     else:
         return jsonify({'message': 'Invalid userid or password'}), 401
+    
  
 
 @app.route('/booking', methods=['POST'])
@@ -172,40 +178,8 @@ def booking():
         if branch != booking.branch:
             coolStart = (coolStart - cooldown)
             coolEnd = (coolEnd + cooldown)
-
-
         if inputStart < coolEnd and inputEnd > coolStart:
             return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
-
-
-        # if booking.startDate == inputStartDate and booking.endDate == inputEndDate:
-        #     if from_time < coolToTime and to_time > coolFromTime:
-        #         return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
-        
-        # if booking.startDate <= inputStartDate <= booking.endDate:
-        #     if from_time > coolFromTime :
-        #         return jsonify({'error': 'aThe equipment is already booked for the selected date and time'}), 400
-        # if booking.startDate <= inputEndDate <= booking.endDate:
-        #     if from_time < coolToTime:
-        #         return jsonify({'error': 'bThe equipment is already booked for the selected date and time'}), 400
-            
-
-
-        # if inputStartDate <= booking.startDate <= inputEndDate:
-        #     if from_time < coolToTime and to_time > coolFromTime:
-        #         return jsonify({'error': 'cThe equipment is already booked for the selected date and time'}), 400
-        # if inputStartDate <= booking.endDate <= inputEndDate:
-        #     if from_time < coolToTime and to_time > coolFromTime:
-        #         return jsonify({'error': 'dThe equipment is already booked for the selected date and time'}), 400
-        # if inputStartDate == booking.startDate and inputEndDate == booking.endDate:
-        #     if from_time == coolToTime and to_time == coolFromTime:
-        #         return jsonify({'error': 'eThe equipment is already booked for the selected date and time'}), 400
-        # if inputStartDate == booking.startDate and inputEndDate == booking.endDate:
-        #     if from_time == coolToTime and to_time == coolFromTime:
-        #         return jsonify({'error': 'fThe equipment is already booked for the selected date and time'}), 400
-        
-            
-        
 
     new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate)
     db.session.add(new_equipment)
@@ -215,8 +189,6 @@ def booking():
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    # delete_expired_bookings()
-    # delete_expired_booking() 
     data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
     if len(data) == 0:
         return jsonify({'message': 'There are No Bookings'}), 404
@@ -234,8 +206,6 @@ def get_data():
 
 @app.route('/data/<userId>', methods=['GET'])
 def get_items_by_user(userId):
-    # data = BookingsTB.query.filter_by(userid=userId).all()
-    # data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time))).filter_by(userid = userId).all()
     data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)),BookingsTB.endDate, (cast(BookingsTB.toTime, Time) )).filter_by(userid = userId).all()
 
     if len(data) == 0:
