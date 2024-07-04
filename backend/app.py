@@ -7,7 +7,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, date
 import pytz
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
 app = Flask(__name__)
 CORS(app)  
@@ -15,6 +15,8 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'super-secret-E47C87FF-48EC-4FB2-ABDA-514CB4B1B365'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
@@ -117,13 +119,18 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         delete_expired_bookings()
         delete_expired_booking()
-        access_token = create_access_token(identity={'id': user.userid, 'role': user.designation})
-        # return jsonify(access_token=access_token)
-        return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation, 'access_token' : access_token}), 200
+        access_token = create_access_token(identity={'id': user.userid, 'role': user.designation}, fresh=True)
+        refresh_token = create_refresh_token(identity={'id': user.userid, 'role': user.designation})
+        return jsonify({'message': 'Login successful' , 'username' : user.userid , 'designation' : user.designation, 'access_token' : access_token , 'refresh_token' : refresh_token}), 200
     else:
         return jsonify({'message': 'Invalid userid or password'}), 401
     
- 
+@app.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    current_user = get_jwt_identity()
+    access_token = create_access_token(identity=current_user, fresh=False)
+    return jsonify({'access_token': access_token}), 200
 
 @app.route('/booking', methods=['POST'])
 def booking():

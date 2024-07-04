@@ -14,7 +14,8 @@ function TabsExample({ op1, op2, op1href, op2href ,defhref}) {
     const navigate = useNavigate();
     function handleSignOut() {
         setAuth({});
-        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         navigate('/');
         
  
