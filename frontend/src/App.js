@@ -12,6 +12,7 @@ import RequireAuth from './Util/RequireAuth.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DeleteBooking from './pages/DeleteBooking';
 import ManageEquipment from './pages/ManageEquipment';
+import UnAuthorized from './pages/UnAuthorized';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
                         <Route exact path="/register" element={<RegisterUser/>} />
                         <Route exact path="/" element={<LoginPage/>} />
                         <Route exact path="*" element={<NotFound/>} />
+                        <Route path="/unauthorized" element={<UnAuthorized/>} />
                         <Route element={<PersistLogin />}>
                         <Route element={<RequireAuth allowedRoles={['staff']} />}>
                         <Route path="/staffhome" element={<StaffHome />} />
