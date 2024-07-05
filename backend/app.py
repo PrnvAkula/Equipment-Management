@@ -15,8 +15,8 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'super-secret-E47C87FF-48EC-4FB2-ABDA-514CB4B1B365'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
-app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=9)
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(seconds=30)
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
@@ -133,6 +133,7 @@ def refresh():
     return jsonify({'access_token': access_token}), 200
 
 @app.route('/booking', methods=['POST'])
+@jwt_required
 def booking():
     data = request.get_json()
     userid = data['username']
@@ -144,8 +145,12 @@ def booking():
     startDate = data['startDate']
     endDate = data['endDate']
 
+
+
     from_time = datetime.strptime(f"{fromTime}", '%H:%M').time()
     to_time = datetime.strptime(f"{toTime}", '%H:%M').time()
+
+
     if not branch:
         return jsonify({'error' : 'Branch field cannot be empty'}),400
     if not ename:
@@ -195,6 +200,7 @@ def booking():
 
 
 @app.route('/data', methods=['GET'])
+
 def get_data():
     data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
     if len(data) == 0:
