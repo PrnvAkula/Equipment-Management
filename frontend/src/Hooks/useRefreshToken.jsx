@@ -18,6 +18,7 @@ const useRefreshToken = () => {
             const roles = jwtDecode(response.data.access_token).sub.role;
             return {
                 ...prev,
+                user: jwtDecode(response.data.access_token).sub.id,
                 roles: roles,
                 accessToken: response.data.access_token
             }
