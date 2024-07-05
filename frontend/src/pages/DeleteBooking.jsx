@@ -1,9 +1,8 @@
 import TabsExample from '../components/Nav';
 import { useEffect, useState } from 'react';
-import {decode as base64_decode} from 'base-64';
 import DeleteTable from '../components/DeleteTable';
 import Alerts from '../components/Alerts';
-
+import useAuth from '../Util/Context';
 
 
 
@@ -11,11 +10,9 @@ function DeleteBooking(){
 
 
     const [data, setData] = useState([]);
-    const user1 = sessionStorage.getItem('authToken')
-    const username = base64_decode(user1);
-    const userId = username;
+    const {auth} = useAuth();
     const [error, setError] = useState('');
-
+    const userId = auth.user;
     
     useEffect(() => {
         fetch(`http://127.0.0.1:5000/data/${userId}`)

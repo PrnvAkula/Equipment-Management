@@ -1,32 +1,41 @@
 import React, { useState } from 'react';
 import Form from '../components/Form';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../Util/Context';
+import {useNavigate} from 'react-router-dom';
+import useAuth  from '../Util/Context';
 import Alerts from '../components/Alerts';
-import { encode as base64_encode} from 'base-64'
+import  {jwtDecode} from 'jwt-decode';  
 
 function LoginPage() {
     const [userid, setuserid] = useState('');
     const [password, setpassword] = useState('');
     const [loginError, setLoginError] = useState('');
-    const auth = useAuth();
+    const { setAuth } = useAuth();
     const navigate = useNavigate();
 
-    function handleSubmit(event) {
+
+
+    async function handleSubmit(event) {
         event.preventDefault();
-        axios.post('http://127.0.0.1:5000/login', { userid, password })
+        axios.post('/login', { userid, password } )
             .then(response => {
-                console.log('Login successful', response.data);
+                console.log('Login successful', response.data); 
                 setuserid(response.data.username);
-                const authToken = base64_encode(`${response.data.username}`);
-                sessionStorage.setItem('authToken', authToken);
-                auth.login()
-                if (response.data.designation === 'doctor')
-                    navigate('/doctorhome');
-                else
-                    navigate('/staffhome')
-                
+                // console.log('Access token:', response.data.access_token)
+                localStorage.setItem('token', response.data.access_token);
+                localStorage.setItem('refreshToken', response.data.refresh_token);
+                const decodedToken = jwtDecode(response.data.access_token);
+                const roles = decodedToken.sub.role;
+                setAuth({accessToken :response.data.access_token
+                    , roles: roles,
+                    user: response.data.username
+                });
+                if (roles === 'staff') {
+                    navigate('/staffhome', { replace: true });
+                }
+                else if (roles === 'doctor') {
+                    navigate('/doctorhome', { replace: true });
+                }
             })
             .catch(error => {
                 console.error('Login failed', error.response.data);
