@@ -5,12 +5,12 @@ import Details from '../components/Details';
 import { Toasts } from '../components/Alerts';
 import Alerts from '../components/Alerts';
 import { jwtDecode } from 'jwt-decode';
-import useAuth from '../Util/Context';
+
 
 function BookingPage() {
 
     const today = new Date();            
-    const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>10 ? '-' : '-0') +  (today.getMonth() + 1 ) + '-' + today.getDate();
+    const todaydate = today.getFullYear() + ((today.getMonth() + 1)> 9 ? '-' : '-0') +  (today.getMonth() + 1 ) + '-' + ((today.getDate() )>9 ? '' : '0') + (today.getDate());
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
     const [startDate, setStartDate] = useState(`${todaydate}`);  
@@ -24,7 +24,7 @@ function BookingPage() {
     const [equipments, setEquipments] = useState([]);
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
-    const { auth } = useAuth();
+
 
     
     useEffect(() => {
@@ -116,6 +116,7 @@ function BookingPage() {
                 </form>
             </div>
             { branch && ename && <Details
+            date={todaydate}
             startDate = {startDate}
             setStartDate = {setStartDate}
             endDate = {endDate}
