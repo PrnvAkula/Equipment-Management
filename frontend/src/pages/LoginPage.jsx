@@ -21,7 +21,7 @@ function LoginPage() {
             .then(response => {
                 console.log('Login successful', response.data); 
                 setuserid(response.data.username);
-                console.log('Access token:', response.data.access_token)
+                // console.log('Access token:', response.data.access_token)
                 localStorage.setItem('token', response.data.access_token);
                 localStorage.setItem('refreshToken', response.data.refresh_token);
                 const decodedToken = jwtDecode(response.data.access_token);
