@@ -7,12 +7,11 @@ import BookingPage from './pages/BookingPage.jsx';
 import './App.css';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './Util/AuthProvider';
-
+import PersistLogin from './components/PersistLogin';
 import RequireAuth from './Util/RequireAuth.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DeleteBooking from './pages/DeleteBooking';
 import ManageEquipment from './pages/ManageEquipment';
-
 
 
 function App() {
@@ -26,6 +25,7 @@ function App() {
                         <Route exact path="/register" element={<RegisterUser/>} />
                         <Route exact path="/" element={<LoginPage/>} />
                         <Route exact path="*" element={<NotFound/>} />
+                        <Route element={<PersistLogin />}>
                         <Route element={<RequireAuth allowedRoles={['staff']} />}>
                         <Route path="/staffhome" element={<StaffHome />} />
                         <Route path="/manageequipment" element={<ManageEquipment />} />
@@ -34,6 +34,7 @@ function App() {
                         <Route element={<RequireAuth allowedRoles={['doctor']} />}>
                         <Route path="/doctorhome" element={<BookingPage />} />
                         <Route path="/deletebooking" element={<DeleteBooking />} />
+                        </Route>
                         </Route>
                         {/* <Route exact path="/staffhome" element={<StaffHome />} />
                         <Route exact path="/doctorhome" element={<BookingPage />} />

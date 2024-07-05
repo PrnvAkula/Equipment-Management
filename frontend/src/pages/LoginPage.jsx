@@ -26,7 +26,10 @@ function LoginPage() {
                 localStorage.setItem('refreshToken', response.data.refresh_token);
                 const decodedToken = jwtDecode(response.data.access_token);
                 const roles = decodedToken.sub.role;
-                setAuth(response.data.access_token);
+                setAuth({accessToken :response.data.access_token
+                    , roles: roles,
+                    user: response.data.username
+                });
                 if (roles === 'staff') {
                     navigate('/staffhome', { replace: true });
                 }
