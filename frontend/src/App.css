@@ -191,3 +191,7 @@ body{
   border: 1px solid rgb(241, 239, 239); 
   background-color: rgb(241, 239, 239);
 }
+
+.custom-nav-link {
+  text-decoration: none; /* Removes the underline */
+}
