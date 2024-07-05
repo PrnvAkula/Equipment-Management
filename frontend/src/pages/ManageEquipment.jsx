@@ -66,11 +66,15 @@ function ManageEquipment() {
                 op2href={'/manageequipment'} />
             {error && <Alerts error = {error}/>}
             {success && Success({success : success})}
-        <div className='addequipment'>
+        <div className='details'>
+            <h2>Add an Equipment</h2>
             <input type="text" value={newEquipment} onChange={e => setNewEquipment(e.target.value)} />
-            <Button onClick={handleAdd} className='but'>Add</Button>
+            <Button onClick={handleAdd} className='but2'>Add</Button>
         </div>
-            <div>
+        <br/>
+        <br/>
+            <div className="details">
+            <h2>Equipment List</h2>
             <table className="table table-striped">
                 <thead>
                     <tr>              

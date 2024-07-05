@@ -5,11 +5,15 @@ Steps to setup the application:
     2) npm isntall axios
     3) npm install react-bootstrap bootstrap
     4) npm install base-64
+    5) npm install jwt-decode
+
   In the backend folder:
     1) pip install flask
     2) pip install flask_sqlalchemy
     3) pip install -U flask-cors
     4) pip install mysqlclient
+    5) pip install flask_jwt_extended
+    6) pip install pytz
 
 Steps to start the application:
   Run mySQL in phpmyadmin after creating a database called equipdb (change your password in the app.py if u have your own account) 
