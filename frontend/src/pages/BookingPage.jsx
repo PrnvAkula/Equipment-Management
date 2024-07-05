@@ -12,13 +12,13 @@ function BookingPage() {
 
     const today = new Date();            
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>9 ? '-' : '-0') +  (today.getMonth() + 1 ) + ((today.getDate())>9 ? '-':'-0') + (today.getDate());
-
+    const currentTime = today.getHours() + ':' + today.getMinutes();
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
     const [startDate, setStartDate] = useState(`${todaydate}`);  
     const [endDate, setEndDate] = useState(`${todaydate}`);  
-    const [fromTime, setFromTime] = useState('00:00');
-    const [toTime, setToTime] = useState('12:00');
+    const [fromTime, setFromTime] = useState(`${currentTime}`);
+    const [toTime, setToTime] = useState('23:59');
     const [surgeryType, setSurgeryType] = useState('');
     const username = jwtDecode(localStorage.getItem('token')).sub.id;
     const [error, setError] = useState('');
@@ -119,7 +119,6 @@ function BookingPage() {
                 </form>
             </div>
             { branch && ename && <Details
-            date={todaydate}
             startDate = {startDate}
             setStartDate = {setStartDate}
             endDate = {endDate}
@@ -134,14 +133,13 @@ function BookingPage() {
         }    
         <button className='but' onClick={handleSubmit} type="submit">Submit</button>
         <br/>
-        <br/>
-        
-        {errorr && <div><h1>Active Bookings For {ename}</h1>  <Alerts error = {errorr}/></div>}
+
+        {errorr && <div><h2>Active Bookings For {ename}</h2>  <Alerts error = {errorr}/></div>}
         
         {!errorr && data.length > 0 &&
-        <div>
-            <h1>Active Bookings For {ename}</h1>
-            <div>
+        <>
+            <div  className='activeBookings'>
+            <h2>Active Bookings For {ename}</h2>
                 <table className="table table-striped">
                     <thead>
                         <tr>
@@ -171,7 +169,8 @@ function BookingPage() {
                     </tbody>
                 </table>
             </div>
-        </div>
+        
+            </>
         }
 
         </div>

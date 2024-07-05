@@ -73,7 +73,7 @@ function ManageEquipment() {
         </div>
         <br/>
         <br/>
-            <div className="details">
+            <div className="addeq">
             <h2>Equipment List</h2>
             <table className="table table-striped">
                 <thead>

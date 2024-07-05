@@ -136,10 +136,19 @@ body{
   border: 1px solid rgb(241, 239, 239); 
   background-color: rgb(241, 239, 239);
 }
+
 .surgery-type-box{
   width: 250px;
 }
 
+.addeq{
+  padding: 20px;
+}
+.addeq h2{
+  padding-left: 96px;
+  margin-bottom: 20px;
+  font-family: Titillium Web;
+}
 .but{
   background-color: #f48635;
   color: white;
@@ -169,7 +178,7 @@ body{
 }
 
 .viewequipment{
-  margin: 10px 0 10px 0px;
+  margin: 10px 0 10px 20px;
   font-family: Titillium Web;
 }
 
@@ -193,5 +202,13 @@ body{
 }
 
 .custom-nav-link {
-  text-decoration: none; /* Removes the underline */
+  text-decoration: none; 
+}
+
+.activeBookings {
+  padding-top: 100px;
+  font-family: Titillium Web;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

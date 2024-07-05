@@ -68,7 +68,7 @@ function StaffHome() {
           op2href={'/manageequipment'} />
       </div>
       <div className='viewequipment'>
-        Choose filter:
+        Sort by / Filter:
         <select onChange={handleSortChange} value={sortBy}>
 
           <option value="Date">Date</option>

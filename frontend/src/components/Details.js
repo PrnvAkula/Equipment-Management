@@ -1,5 +1,5 @@
 
-function Details({date , setStartDate, setEndDate, fromTime, setFromTime, toTime, setToTime, surgeryType, setSurgeryType}) {
+function Details({ startDate, setStartDate, endDate, setEndDate, fromTime, setFromTime, toTime, setToTime, surgeryType, setSurgeryType}) {
 
     const handleStartChange = (event) => {
         setStartDate(event.target.value); 
@@ -18,9 +18,9 @@ function Details({date , setStartDate, setEndDate, fromTime, setFromTime, toTime
         <br/>
         <br/>
         <label for="date">Start Date:</label>
-          <input  value = {date} type="date" id="date" name="date" onChange={handleStartChange}/>
+          <input  value = {startDate} type="date" id="date" name="date" onChange={handleStartChange}/>
           <label for="date">End Date:</label>
-          <input  value = {date} type="date" id="date" name="date" onChange={handleEndChange}/>
+          <input  value = {endDate} type="date" id="date" name="date" onChange={handleEndChange}/>
         <label for="time">From:</label>
           <input type="time" className="fromtime" name="time" value={fromTime} onChange={handleFromChange}/>
         <label for="time">To:</label>

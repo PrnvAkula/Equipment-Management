@@ -4,8 +4,7 @@ Steps to setup the application:
     1) npm install react-router-dom
     2) npm isntall axios
     3) npm install react-bootstrap bootstrap
-    4) npm install base-64
-    5) npm install jwt-decode
+    4) npm install jwt-decode
 
   In the backend folder:
     1) pip install flask
