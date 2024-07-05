@@ -5,8 +5,7 @@ import Details from '../components/Details';
 import { Toasts } from '../components/Alerts';
 import Alerts from '../components/Alerts';
 import { jwtDecode } from 'jwt-decode';
-
-// import Button from 'react-bootstrap/Button';
+import useAuth from '../Util/Context';
 
 function BookingPage() {
 
@@ -25,6 +24,7 @@ function BookingPage() {
     const [equipments, setEquipments] = useState([]);
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
+    const { auth } = useAuth();
 
     
     useEffect(() => {
@@ -54,7 +54,9 @@ function BookingPage() {
         try {
             console.log(todaydate);
             console.log(fromTime);
-            const response = await axios.post('http://127.0.0.1:5000/booking', { username, branch, ename, startDate, endDate, fromTime, toTime, surgeryType});
+            const response = await axios.post('http://127.0.0.1:5000/booking', { 
+                username, branch, ename, startDate, endDate, fromTime, toTime, surgeryType, 
+            });
             console.log('Response:', response.data);
             const message = response.data.message || 'Equipment added successfully';
             setSuccess(message);

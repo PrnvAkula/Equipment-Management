@@ -133,7 +133,6 @@ def refresh():
     return jsonify({'access_token': access_token}), 200
 
 @app.route('/booking', methods=['POST'])
-@jwt_required
 def booking():
     data = request.get_json()
     userid = data['username']
