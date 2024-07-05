@@ -26,7 +26,7 @@ function BookingPage() {
     const [equipments, setEquipments] = useState([]);
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
-    const { auth } = useAuth();
+
 
     
     useEffect(() => {
@@ -119,7 +119,7 @@ function BookingPage() {
                 </form>
             </div>
             { branch && ename && <Details
-            date = {todaydate}
+            date={todaydate}
             startDate = {startDate}
             setStartDate = {setStartDate}
             endDate = {endDate}
