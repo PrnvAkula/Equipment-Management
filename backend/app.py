@@ -8,13 +8,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, date
 import pytz
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+JWT_KEY = os.getenv('JWT_KEY')
 
 app = Flask(__name__)
 CORS(app , supports_credentials=True)  
 
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'super-secret-E47C87FF-48EC-4FB2-ABDA-514CB4B1B365'
+app.config['JWT_SECRET_KEY'] = JWT_KEY
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=9)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 jwt = JWTManager(app)

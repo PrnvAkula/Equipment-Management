@@ -13,6 +13,7 @@ Steps to setup the application:
     4) pip install mysqlclient
     5) pip install flask_jwt_extended
     6) pip install pytz
+    6) pip install python-dotnet
 
 Steps to start the application:
   Run mySQL in phpmyadmin after creating a database called equipdb (change your password in the app.py if u have your own account) 
