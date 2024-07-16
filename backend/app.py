@@ -16,14 +16,13 @@ load_dotenv()
 JWT_KEY = os.getenv('JWT_KEY')
 
 app = Flask(__name__)
-CORS(app , supports_credentials=True)  
-
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = JWT_KEY
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=9)
-app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
+app.config['JWT_SECRET_KEY'] = 'super-secret-E47C87FF-48EC-4FB2-ABDA-514CB4B1B365'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=5)
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
@@ -140,7 +139,10 @@ def refresh():
     return jsonify({'access_token': access_token}), 200
 
 @app.route('/booking', methods=['POST'])
+
 def booking():
+    auth_header = request.headers.get("Authorization")
+    # current_user = get_jwt_identity()
     data = request.get_json()
     userid = data['username']
     branch = data['branch']
@@ -150,8 +152,9 @@ def booking():
     fromTime = data['fromTime']
     startDate = data['startDate']
     endDate = data['endDate']
-
-
+    print(auth_header)
+    # print(current_user)
+    
 
     from_time = datetime.strptime(f"{fromTime}", '%H:%M').time()
     to_time = datetime.strptime(f"{toTime}", '%H:%M').time()
@@ -206,7 +209,7 @@ def booking():
 
 
 @app.route('/data', methods=['GET'])
-
+@jwt_required()
 def get_data():
     data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
     if len(data) == 0:
@@ -224,6 +227,7 @@ def get_data():
     return jsonify(result)
 
 @app.route('/data/<userId>', methods=['GET'])
+@jwt_required()
 def get_items_by_user(userId):
     data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)),BookingsTB.endDate, (cast(BookingsTB.toTime, Time) )).filter_by(userid = userId).all()
 
@@ -274,6 +278,7 @@ def delete_equipment(Id):
         return jsonify({'message': 'Equipment not found'}), 404
     
 @app.route('/equipment', methods=['GET'])
+@jwt_required()
 def get_equipment():
     # delete_expired_bookings()
     # delete_expired_booking()
@@ -286,6 +291,7 @@ def get_equipment():
     return jsonify(result)
 
 @app.route('/equipment/<ename>', methods=['GET'])
+
 def get_equipment_by_id(ename):
     equipment = BookingsTB.query.filter_by(ename = ename).all()
     if equipment:
@@ -306,6 +312,7 @@ def get_equipment_by_id(ename):
     
 
 @app.route('/Sortby')
+@jwt_required()
 def sort_by():
     sort_by = request.args.get('sort_by', '')  
     sort = request.args.get('sort', '')

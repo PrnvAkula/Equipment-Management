@@ -32,14 +32,22 @@ function StaffHome() {
     setSorter(event.target.value);
   }
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/data')
+    fetch('http://127.0.0.1:5000/data',{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(response => response.json())
       .then(data => {
         setData(data)
         setError(data.message)
       })
       .catch(error => console.log('Error fetching data:', error));
-    fetch('http://127.0.0.1:5000/equipment')
+    fetch('http://127.0.0.1:5000/equipment',{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(response => response.json())
       .then(data => {
         setEquipments(data)
@@ -48,7 +56,11 @@ function StaffHome() {
   }, []);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/Sortby?sort_by=${sortBy}&sort=${sorter}`)
+    fetch(`http://127.0.0.1:5000/Sortby?sort_by=${sortBy}&sort=${sorter}`,{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(response => response.json())
       .then(data => {
         setData(data)

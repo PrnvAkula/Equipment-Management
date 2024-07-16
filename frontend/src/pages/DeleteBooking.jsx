@@ -15,7 +15,11 @@ function DeleteBooking(){
     const userId = auth.user;
     
     useEffect(() => {
-        fetch(`http://127.0.0.1:5000/data/${userId}`)
+        fetch(`http://127.0.0.1:5000/data/${userId}`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
           .then(response => response.json())
           .then(data => {setData(data)
             setError(data.message)

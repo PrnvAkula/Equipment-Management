@@ -7,12 +7,11 @@ import Alerts from '../components/Alerts';
 import { jwtDecode } from 'jwt-decode';
 import useAuth from '../Util/Context';
 
-
 function BookingPage() {
-
+    const {auth} = useAuth();
     const today = new Date();            
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>9 ? '-' : '-0') +  (today.getMonth() + 1 ) + ((today.getDate())>9 ? '-':'-0') + (today.getDate());
-    const currentTime = today.getHours() + ':' + today.getMinutes();
+    const currentTime = ((today.getHours() > 10)? '' : '0') + today.getHours() + ':' + ((today.getMinutes() > 10)? '' : '0') + today.getMinutes();
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
     const [startDate, setStartDate] = useState(`${todaydate}`);  
@@ -30,7 +29,11 @@ function BookingPage() {
 
     
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/equipment')
+        fetch('http://127.0.0.1:5000/equipment',{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          })
           .then(response => response.json())
           .then(data =>{ setEquipments(data)
           })
@@ -54,12 +57,15 @@ function BookingPage() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            console.log(todaydate);
-            console.log(today);
-            console.log(fromTime);
+            console.log(`Bearer ${auth.accessToken}`)
+
             const response = await axios.post('http://127.0.0.1:5000/booking', { 
-                username, branch, ename, startDate, endDate, fromTime, toTime, surgeryType, 
+                username, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,
+                headers: {
+                    Authorization : `Bearer ${auth.accessToken}`
+                }
             });
+        
             console.log('Response:', response.data);
             const message = response.data.message || 'Equipment added successfully';
             setSuccess(message);

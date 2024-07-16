@@ -14,7 +14,11 @@ function ManageEquipment() {
     // const username = base64_decode(sessionStorage.getItem('authToken'));
     
     useEffect(() => {
-        fetch('http://127.0.0.1:5000/equipment')
+        fetch('http://127.0.0.1:5000/equipment',{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          })
           .then(response => response.json())
           .then(data => setEquipments(data))
           .catch(error => console.log('Error fetching data:', error));
