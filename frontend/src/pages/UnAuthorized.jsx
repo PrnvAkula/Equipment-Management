@@ -1,11 +1,11 @@
-import Logo from "../components/Logo"
+import TabsExample from "../components/Nav"
 
 export default function UnAuthorized() {
 
     return (
-        <div>
+            <div>
+                <TabsExample />
             
-            <Logo/>
             <h1>Unauthorized</h1>
             <p>You are not authorized to view this page</p>
         </div>

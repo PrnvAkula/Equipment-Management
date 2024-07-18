@@ -121,7 +121,7 @@ body{
 }
 
 .details{
-  margin-left: 116px;
+  margin-left: 20px;
   font-family: Titillium Web;
 }
 .details label{
@@ -141,11 +141,8 @@ body{
   width: 250px;
 }
 
-.addeq{
-  padding: 20px;
-}
 .addeq h2{
-  padding-left: 96px;
+  padding-left: 20px;
   margin-bottom: 20px;
   font-family: Titillium Web;
 }
@@ -180,12 +177,13 @@ body{
 .viewequipment{
   margin: 10px 0 10px 20px;
   font-family: Titillium Web;
+  display: flex;
 }
 
 .viewequipment select{
   padding-left:7px;
   border-radius: 13px;
-  margin-left: 7px;
+  margin: 0px 30px 0px 10px;
   height: 30px;
   width: 140px;
   border-color: rgb(241, 239, 239);

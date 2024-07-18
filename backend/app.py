@@ -20,7 +20,7 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/equipdb?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'super-secret-E47C87FF-48EC-4FB2-ABDA-514CB4B1B365'
+app.config['JWT_SECRET_KEY'] = JWT_KEY
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=5)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
