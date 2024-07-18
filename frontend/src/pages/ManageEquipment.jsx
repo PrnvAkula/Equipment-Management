@@ -34,9 +34,7 @@ function ManageEquipment() {
         if (isConfirmed) {
             try {
                 const response = await fetch(`http://127.0.0.1:5000/deleteequipment/${id}`, { method: 'DELETE' });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                
                 const data = await response.json();
                 setEquipments(equipments.filter(equipment => equipment.id !== id));
                 setSuccess(data.message);
@@ -89,9 +87,9 @@ function ManageEquipment() {
                         </tr>
                     </thead>
                     <tbody>
-                        {equipments.map((equipment) => (
-                            <tr key={equipment.id}>
-                                <th scope="row">{equipment.id}</th>
+                        {equipments.map((equipment, index) => (
+                            <tr key={index}>
+                                <th scope="row">{index+1}</th>
                                 <td>{equipment.equipment}</td>
                                 <td>
                                     <Button onClick={() => handleDelete(equipment.id)} className='but'>Delete</Button>

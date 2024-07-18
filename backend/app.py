@@ -209,7 +209,7 @@ def booking():
 
 
 @app.route('/data', methods=['GET'])
-@jwt_required()
+
 def get_data():
     data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
     if len(data) == 0:
@@ -227,7 +227,7 @@ def get_data():
     return jsonify(result)
 
 @app.route('/data/<userId>', methods=['GET'])
-@jwt_required()
+
 def get_items_by_user(userId):
     data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)),BookingsTB.endDate, (cast(BookingsTB.toTime, Time) )).filter_by(userid = userId).all()
 
@@ -278,7 +278,7 @@ def delete_equipment(Id):
         return jsonify({'message': 'Equipment not found'}), 404
     
 @app.route('/equipment', methods=['GET'])
-@jwt_required()
+
 def get_equipment():
     # delete_expired_bookings()
     # delete_expired_booking()
@@ -312,7 +312,7 @@ def get_equipment_by_id(ename):
     
 
 @app.route('/Sortby')
-@jwt_required()
+
 def sort_by():
     sort_by = request.args.get('sort_by', '')  
     sort = request.args.get('sort', '')

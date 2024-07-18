@@ -215,7 +215,7 @@ function StaffHome() {
           <option value="Branch">Branch</option>
           <option value="Equipment">Equipment</option>
         </select>
-        Add Filter: 
+        Filter by: 
         {sortBy === 'Date' && <input type="date" onChange={handleDate} value={sorter} />}
         {sortBy === 'Branch' && (
           <select onChange={handleBranchChange} value={sorter}>

@@ -138,11 +138,11 @@ function BookingPage() {
             />
         }    
         <button className='but' onClick={handleSubmit} type="submit">Submit</button>
-        <br/>
-
-        {errorr && <div><h2>Active Bookings For {ename}</h2>  <Alerts error = {errorr}/></div>}
         
-        {!errorr && data.length > 0 &&
+
+        {errorr && <div className='activeBookings'><h2>Active Bookings For {ename}</h2>  <Alerts error = {errorr}/></div>}
+        
+        {!errorr && data.length > 0 && ename  &&
         <>
             <div  className='activeBookings'>
             <h2>Active Bookings For {ename}</h2>
