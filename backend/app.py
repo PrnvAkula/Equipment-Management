@@ -23,6 +23,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = JWT_KEY
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=5)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(hours=1)
+REQUIRED_KEYWORD='yashoda@'
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
@@ -95,15 +96,18 @@ def delete_expired_booking():
 def register_user():
 
     data = request.get_json()
-    userid = data.get('userid')
+    user_id = data.get('userid')
     password = data.get('password')
     designation_str = data.get('designation')
-    if not userid or not password or not designation_str:
+    if REQUIRED_KEYWORD not in user_id:
+        return jsonify({"error": "Invalid Username (Keyword)"}), 400
+    userid = user_id.split("@")[1]
+    if not password or not designation_str:
         return jsonify({"error": "Missing userid, password, or designation"}), 400
     if len(userid) > 20:
         return jsonify({"error": "User ID must be at most 20 characters long"}), 400
-    if len(userid) < 5:
-        return jsonify({"error": "User ID must be at least 5 characters long"}), 400
+    if len(userid) < 5 or not userid:
+        return jsonify({"error": "User ID must be at least 5 characters long after keyword"}), 400
     if Registration.query.filter_by(userid=userid).first():
         return jsonify({"error": "User already exists"}), 400
     if len(password) < 8:
