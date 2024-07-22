@@ -91,31 +91,31 @@ def delete_expired_booking():
     db.session.commit()
 
 
-# @app.route('/register', methods=['POST'])
-# def register_user():
+@app.route('/register', methods=['POST'])
+def register_user():
 
-#     data = request.get_json()
-#     userid = data.get('userid')
-#     password = data.get('password')
-#     designation_str = data.get('designation')
-#     if not userid or not password or not designation_str:
-#         return jsonify({"error": "Missing userid, password, or designation"}), 400
-#     if len(userid) > 20:
-#         return jsonify({"error": "User ID must be at most 20 characters long"}), 400
-#     if len(userid) < 5:
-#         return jsonify({"error": "User ID must be at least 5 characters long"}), 400
-#     if Registration.query.filter_by(userid=userid).first():
-#         return jsonify({"error": "User already exists"}), 400
-#     if len(password) < 8:
-#         return jsonify({"error": "Password must be at least 8 characters long"}), 400
-#     if len(password) > 20:
-#         return jsonify({"error": "Password must be at most 20 characters long"}), 400
+    data = request.get_json()
+    userid = data.get('userid')
+    password = data.get('password')
+    designation_str = data.get('designation')
+    if not userid or not password or not designation_str:
+        return jsonify({"error": "Missing userid, password, or designation"}), 400
+    if len(userid) > 20:
+        return jsonify({"error": "User ID must be at most 20 characters long"}), 400
+    if len(userid) < 5:
+        return jsonify({"error": "User ID must be at least 5 characters long"}), 400
+    if Registration.query.filter_by(userid=userid).first():
+        return jsonify({"error": "User already exists"}), 400
+    if len(password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters long"}), 400
+    if len(password) > 20:
+        return jsonify({"error": "Password must be at most 20 characters long"}), 400
     
-#     new_user = Registration(userid=userid, designation=designation_str,)
-#     Registration.set_password(new_user, password)
-#     db.session.add(new_user)
-#     db.session.commit()
-#     return jsonify({"message": "Registration successful", "userid": userid, "designation": designation_str})
+    new_user = Registration(userid=userid, designation=designation_str,)
+    Registration.set_password(new_user, password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"message": "Registration successful", "userid": userid, "designation": designation_str})
 #login authentication
 
 @app.route('/login', methods=['POST'])
