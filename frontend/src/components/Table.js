@@ -21,7 +21,7 @@ function Table({data}){
                     <tr key={index}>
                     <th scope="row">{index+1}</th>
                     <td>{row.branch}</td>
-                    <td>{row.userid}</td>
+                    <td>{row.doctorName}</td>
                     <td>{row.ename}</td>
                     <td>{row.surgeryType}</td>
                     <td>{row.startDate}</td>

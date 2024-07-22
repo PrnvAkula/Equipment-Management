@@ -27,7 +27,6 @@ function BookingPage() {
     const [errorr, setErrorr] = useState('');
     const [doctorName, setDoctorName] = useState('');
 
-
     
     useEffect(() => {
         fetch('http://127.0.0.1:5000/equipment',{
@@ -41,6 +40,7 @@ function BookingPage() {
           .catch(error => console.log('Error fetching data:', error));
           
       }, []);
+
     useEffect(() => {
         fetch(`http://127.0.0.1:5000/equipment/${ename}`)
         .then(response => response.json())
@@ -48,7 +48,7 @@ function BookingPage() {
             setErrorr(data.message)
         })
         .catch(error => console.log('Error fetching data:', error));
-    }, [ename]);
+    }, [ename, success]);
  
         
     function onClose(){
@@ -56,12 +56,13 @@ function BookingPage() {
         setSuccess('');
     }
     const handleSubmit = async (event) => {
+        
         event.preventDefault();
         try {
             console.log(`Bearer ${auth.accessToken}`)
 
             const response = await axios.post('http://127.0.0.1:5000/booking', { 
-                doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,
+                doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,username,
                 headers: {
                     Authorization : `Bearer ${auth.accessToken}`
                 }
@@ -78,7 +79,6 @@ function BookingPage() {
             setError(message);
             setSuccess('');
             
-
         }
     };
     const handleDoctorNameChange = (event) => {

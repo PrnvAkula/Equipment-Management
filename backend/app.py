@@ -36,7 +36,8 @@ class BookingsTB(db.Model):
     startDate = db.Column(db.Date)
     endDate = db.Column(db.Date)
     surgeryType = db.Column(db.String(100), nullable=False)
-    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, startDate, endDate):
+    doctorName = db.Column(db.String(100), nullable=False)
+    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, startDate, endDate, doctorName):
         self.userid = userid
         self.branch = branch
         self.ename = ename
@@ -45,6 +46,7 @@ class BookingsTB(db.Model):
         self.fromTime = fromTime
         self.startDate = startDate
         self.endDate = endDate
+        self.doctorName = doctorName
 
     
 
@@ -89,31 +91,31 @@ def delete_expired_booking():
     db.session.commit()
 
 
-@app.route('/register', methods=['POST'])
-def register_user():
+# @app.route('/register', methods=['POST'])
+# def register_user():
 
-    data = request.get_json()
-    userid = data.get('userid')
-    password = data.get('password')
-    designation_str = data.get('designation')
-    if not userid or not password or not designation_str:
-        return jsonify({"error": "Missing userid, password, or designation"}), 400
-    if len(userid) > 20:
-        return jsonify({"error": "User ID must be at most 20 characters long"}), 400
-    if len(userid) < 5:
-        return jsonify({"error": "User ID must be at least 5 characters long"}), 400
-    if Registration.query.filter_by(userid=userid).first():
-        return jsonify({"error": "User already exists"}), 400
-    if len(password) < 8:
-        return jsonify({"error": "Password must be at least 8 characters long"}), 400
-    if len(password) > 20:
-        return jsonify({"error": "Password must be at most 20 characters long"}), 400
+#     data = request.get_json()
+#     userid = data.get('userid')
+#     password = data.get('password')
+#     designation_str = data.get('designation')
+#     if not userid or not password or not designation_str:
+#         return jsonify({"error": "Missing userid, password, or designation"}), 400
+#     if len(userid) > 20:
+#         return jsonify({"error": "User ID must be at most 20 characters long"}), 400
+#     if len(userid) < 5:
+#         return jsonify({"error": "User ID must be at least 5 characters long"}), 400
+#     if Registration.query.filter_by(userid=userid).first():
+#         return jsonify({"error": "User already exists"}), 400
+#     if len(password) < 8:
+#         return jsonify({"error": "Password must be at least 8 characters long"}), 400
+#     if len(password) > 20:
+#         return jsonify({"error": "Password must be at most 20 characters long"}), 400
     
-    new_user = Registration(userid=userid, designation=designation_str,)
-    Registration.set_password(new_user, password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"message": "Registration successful", "userid": userid, "designation": designation_str})
+#     new_user = Registration(userid=userid, designation=designation_str,)
+#     Registration.set_password(new_user, password)
+#     db.session.add(new_user)
+#     db.session.commit()
+#     return jsonify({"message": "Registration successful", "userid": userid, "designation": designation_str})
 #login authentication
 
 @app.route('/login', methods=['POST'])
@@ -141,7 +143,7 @@ def refresh():
 @app.route('/booking', methods=['POST'])
 
 def booking():
-    auth_header = request.headers.get("Authorization")
+    # auth_header = request.headers.get("Authorization")
     # current_user = get_jwt_identity()
     data = request.get_json()
     userid = data['username']
@@ -152,7 +154,8 @@ def booking():
     fromTime = data['fromTime']
     startDate = data['startDate']
     endDate = data['endDate']
-    print(auth_header)
+    doctorName = data['doctorName']
+    
     # print(current_user)
     
 
@@ -166,6 +169,8 @@ def booking():
         return jsonify({'error' : 'Equipment field cannot be empty'}),400
     if not surgeryType:
         return jsonify({'error': 'Surgery Type cannot be empty'}), 400
+    if not doctorName:
+        return jsonify({'error': 'Doctor Name cannot be empty'}), 400
     # Checks if the dates are not in the past but it's either today or future date
     try:
             inputStartDate = datetime.strptime(startDate, '%Y-%m-%d').date()
@@ -202,7 +207,7 @@ def booking():
         if inputStart < coolEnd and inputEnd > coolStart:
             return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
 
-    new_equipment = BookingsTB(userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate)
+    new_equipment = BookingsTB(doctorName=doctorName, userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate)
     db.session.add(new_equipment)
     db.session.commit()
     return jsonify({'message': 'Equipment Booked successfully'}), 201
@@ -219,10 +224,11 @@ def get_data():
             'branch': row.branch,
             'ename': row.ename,
             'surgeryType': row.surgeryType,
-            'startDate': row.startDate,
+            'startDate': row.startDate.strftime('%a, %d %b %Y'),
             'fromTime': row.fromTime,
-            'endDate': row.endDate,
-            'toTime': row.toTime
+            'endDate': row.endDate.strftime('%a, %d %b %Y'),
+            'toTime': row.toTime,
+            'doctorName': row.doctorName
             } for row in data]  
     return jsonify(result)
 
@@ -241,7 +247,8 @@ def get_items_by_user(userId):
             'startDate': row.startDate.strftime('%a, %d %b %Y'),
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
-            'toTime': row.toTime
+            'toTime': row.toTime, 
+            'doctorName': row.doctorName
             } for row in data] 
     return jsonify(result)
 
@@ -304,7 +311,8 @@ def get_equipment_by_id(ename):
             'startDate': row.startDate.strftime('%a, %d %b %Y'),
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
-            'toTime': row.toTime
+            'toTime': row.toTime,
+            'doctorName': row.doctorName
             } for row in equipment]
         return jsonify(result)
     else:
@@ -355,7 +363,8 @@ def sort_by():
             'startDate': row.startDate.strftime('%a, %d %b %Y'),
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
-            'toTime': row.toTime
+            'toTime': row.toTime,
+            'doctorName': row.doctorName
             } for row in sorted_items]
     return jsonify(result)
 

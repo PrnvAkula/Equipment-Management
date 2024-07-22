@@ -80,7 +80,7 @@ function DeleteTable({data ,errorr, afterDelete}){
                     />
                     </td>
                     <td>{row.branch}</td>
-                    <td>{row.userid}</td>
+                    <td>{row.doctorName}</td>
                     <td>{row.ename}</td>
                     <td>{row.surgeryType}</td>
                     <td>{row.startDate}</td>
