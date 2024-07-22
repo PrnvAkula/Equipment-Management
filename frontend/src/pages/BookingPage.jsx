@@ -25,6 +25,7 @@ function BookingPage() {
     const [equipments, setEquipments] = useState([]);
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
+    const [doctorName, setDoctorName] = useState('');
 
 
     
@@ -60,7 +61,7 @@ function BookingPage() {
             console.log(`Bearer ${auth.accessToken}`)
 
             const response = await axios.post('http://127.0.0.1:5000/booking', { 
-                username, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,
+                doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,
                 headers: {
                     Authorization : `Bearer ${auth.accessToken}`
                 }
@@ -80,7 +81,10 @@ function BookingPage() {
 
         }
     };
-        
+    const handleDoctorNameChange = (event) => {
+        setDoctorName(event.target.value);  
+    }
+
     const handleEnameChange = (event) => {
         setEname(event.target.value);  
     }
@@ -135,6 +139,8 @@ function BookingPage() {
             setToTime = {setToTime}
             surgeryType = {surgeryType}
             setSurgeryType = {setSurgeryType}
+            doctorName = {doctorName}
+            handleDoctorNameChange = {handleDoctorNameChange}
             />
         }    
         <button className='but' onClick={handleSubmit} type="submit">Submit</button>
