@@ -55,18 +55,19 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px;
+  height: 15vh;
   color: black;
-  font-size: 50px;
+  font-size: 6vh;
   font-weight: bold;
 }
+
 .logo{
   background-image: url(../Images/images.png);
   background-repeat: no-repeat;
   background-color: black;
   background-position: left;
-  height: 100px;
-  width : 100px;
+  height: 10vh;
+  width : 10vh;
   background-size: 100% 100%; 
 }
 

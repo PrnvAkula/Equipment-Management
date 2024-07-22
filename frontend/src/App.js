@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import StaffHome from './pages/StaffHomePage';
-import RegisterUser from './pages/RegistrationPage';
+// import RegisterUser from './pages/RegistrationPage';
 import BookingPage from './pages/BookingPage.jsx';
 import './App.css';
 import NotFound from './pages/NotFound';
@@ -23,7 +23,7 @@ function App() {
             <AuthProvider>
                 <Router>
                     <Routes>
-                        <Route exact path="/register" element={<RegisterUser/>} />
+                        {/* <Route exact path="/register" element={<RegisterUser/>} /> */}
                         <Route exact path="/" element={<LoginPage/>} />
                         <Route exact path="*" element={<NotFound/>} />
                         <Route path="/unauthorized" element={<UnAuthorized/>} />

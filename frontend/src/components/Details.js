@@ -1,5 +1,5 @@
 
-function Details({ startDate, setStartDate, endDate, setEndDate, fromTime, setFromTime, toTime, setToTime, surgeryType, setSurgeryType}) {
+function Details({ startDate, setStartDate, endDate, setEndDate, fromTime, setFromTime, toTime, setToTime, surgeryType, setSurgeryType, doctorName, handleDoctorNameChange }) {
 
     const handleStartChange = (event) => {
         setStartDate(event.target.value); 
@@ -28,6 +28,12 @@ function Details({ startDate, setStartDate, endDate, setEndDate, fromTime, setFr
         <label>
             Surgery Type:
           <input type="text" value={surgeryType} onChange={e => setSurgeryType(e.target.value)} className='surgery-type-box' />
+        </label>
+        <br/>
+        <br/>
+        <label>
+            Doctor Name:
+          <input type="text" value={doctorName} onChange={handleDoctorNameChange} className='surgery-type-box' />
         </label>
         <br/>
         <br/>
