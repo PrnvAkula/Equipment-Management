@@ -40,7 +40,8 @@ class BookingsTB(db.Model):
     surgeryType = db.Column(db.String(100), nullable=False)
     doctorName = db.Column(db.String(100), nullable=False)
     bookingTime = db.Column(db.String(100), nullable=False)
-    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, startDate, endDate, doctorName, bookingTime):
+    bookingDate = db.Column(db.String(100), nullable=False)
+    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, startDate, endDate, doctorName, bookingTime, bookingDate):
         self.userid = userid
         self.branch = branch
         self.ename = ename
@@ -51,6 +52,7 @@ class BookingsTB(db.Model):
         self.endDate = endDate
         self.doctorName = doctorName
         self.bookingTime = bookingTime
+        self.bookingDate = bookingDate
 
     
 
@@ -163,13 +165,13 @@ def booking():
     endDate = data['endDate']
     doctorName = data['doctorName']
     bookingTime = data['bookingTime']
+    bookingDate = data['bookingDate']
     
     # print(current_user)
     
 
     from_time = datetime.strptime(f"{fromTime}", '%H:%M').time()
     to_time = datetime.strptime(f"{toTime}", '%H:%M').time()
-    #bookingTime = datetime.strptime(f"{bookingTime}", '%H:%M').time()
 
 
     if not branch:
@@ -216,7 +218,7 @@ def booking():
         if inputStart < coolEnd and inputEnd > coolStart:
             return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
 
-    new_equipment = BookingsTB(doctorName=doctorName, userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate, bookingTime=bookingTime)
+    new_equipment = BookingsTB(doctorName=doctorName, userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate, bookingTime=bookingTime, bookingDate=bookingDate)
     db.session.add(new_equipment)
     db.session.commit()
     return jsonify({'message': 'Equipment Booked successfully'}), 201
@@ -238,7 +240,8 @@ def get_data():
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime,
             'doctorName': row.doctorName,
-            'bookingTime': row.bookingTime
+            'bookingTime': row.bookingTime,
+            'bookingDate': row.bookingDate
             } for row in data]  
     return jsonify(result)
 
@@ -259,7 +262,8 @@ def get_items_by_user(userId):
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime, 
             'doctorName': row.doctorName,
-            'bookingTime': row.bookingTime
+            'bookingTime': row.bookingTime,
+            'bookingDate': row.bookingDate
             } for row in data] 
     return jsonify(result)
 
@@ -323,7 +327,9 @@ def get_equipment_by_id(ename):
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime,
-            'doctorName': row.doctorName
+            'doctorName': row.doctorName,
+            'bookingTime': row.bookingTime,
+            'bookingDate': row.bookingDate
             } for row in equipment]
         return jsonify(result)
     else:
@@ -375,7 +381,9 @@ def sort_by():
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime,
-            'doctorName': row.doctorName
+            'doctorName': row.doctorName,
+            'bookingTime': row.bookignTime,
+            'bookingDate': row.bookingDate
             } for row in sorted_items]
     return jsonify(result)
 
