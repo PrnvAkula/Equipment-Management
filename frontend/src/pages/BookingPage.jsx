@@ -11,7 +11,8 @@ function BookingPage() {
     const {auth} = useAuth();
     const today = new Date();            
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>9 ? '-' : '-0') +  (today.getMonth() + 1 ) + ((today.getDate())>9 ? '-':'-0') + (today.getDate());
-    const currentTime = ((today.getHours() > 10)? '' : '0') + today.getHours() + ':' + ((today.getMinutes() > 10)? '' : '0') + today.getMinutes();
+    const currentTime = ((today.getHours() >= 10)? '' : '0') + today.getHours() + ':' + ((today.getMinutes() > 10)? '' : '0') + today.getMinutes();
+    console.log(currentTime);
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
     const [startDate, setStartDate] = useState(`${todaydate}`);  
