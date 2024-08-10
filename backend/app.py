@@ -39,7 +39,8 @@ class BookingsTB(db.Model):
     endDate = db.Column(db.Date)
     surgeryType = db.Column(db.String(100), nullable=False)
     doctorName = db.Column(db.String(100), nullable=False)
-    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, startDate, endDate, doctorName):
+    bookingTime = db.Column(db.String(100), nullable=False)
+    def __init__(self,userid, branch, ename, surgeryType, toTime, fromTime, startDate, endDate, doctorName, bookingTime):
         self.userid = userid
         self.branch = branch
         self.ename = ename
@@ -49,6 +50,7 @@ class BookingsTB(db.Model):
         self.startDate = startDate
         self.endDate = endDate
         self.doctorName = doctorName
+        self.bookingTime = bookingTime
 
     
 
@@ -160,12 +162,14 @@ def booking():
     startDate = data['startDate']
     endDate = data['endDate']
     doctorName = data['doctorName']
+    bookingTime = data['bookingTime']
     
     # print(current_user)
     
 
     from_time = datetime.strptime(f"{fromTime}", '%H:%M').time()
     to_time = datetime.strptime(f"{toTime}", '%H:%M').time()
+    #bookingTime = datetime.strptime(f"{bookingTime}", '%H:%M').time()
 
 
     if not branch:
@@ -212,7 +216,7 @@ def booking():
         if inputStart < coolEnd and inputEnd > coolStart:
             return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
 
-    new_equipment = BookingsTB(doctorName=doctorName, userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate)
+    new_equipment = BookingsTB(doctorName=doctorName, userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate, bookingTime=bookingTime)
     db.session.add(new_equipment)
     db.session.commit()
     return jsonify({'message': 'Equipment Booked successfully'}), 201
@@ -233,7 +237,8 @@ def get_data():
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime,
-            'doctorName': row.doctorName
+            'doctorName': row.doctorName,
+            'bookingTime': row.bookingTime
             } for row in data]  
     return jsonify(result)
 
@@ -253,7 +258,8 @@ def get_items_by_user(userId):
             'fromTime': row.fromTime,
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime, 
-            'doctorName': row.doctorName
+            'doctorName': row.doctorName,
+            'bookingTime': row.bookingTime
             } for row in data] 
     return jsonify(result)
 

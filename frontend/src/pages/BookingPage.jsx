@@ -27,7 +27,11 @@ function BookingPage() {
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
     const [doctorName, setDoctorName] = useState('');
+    const [bookingTime, setBookingTime] = useState('');
 
+    useEffect(() => {
+        setBookingTime(currentTime);
+    }, [currentTime]);
     
     useEffect(() => {
         fetch('http://127.0.0.1:5000/equipment',{
@@ -63,7 +67,7 @@ function BookingPage() {
             console.log(`Bearer ${auth.accessToken}`)
 
             const response = await axios.post('http://127.0.0.1:5000/booking', { 
-                doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,username,
+                doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,username,bookingTime,
                 headers: {
                     Authorization : `Bearer ${auth.accessToken}`
                 }
