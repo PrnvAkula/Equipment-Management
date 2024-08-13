@@ -277,6 +277,92 @@ def delete_booking(Id):
         return jsonify({'message': 'Booking deleted successfully'}), 200
     else:
         return jsonify({'message': 'Booking not found'}), 404
+    
+
+from datetime import datetime, timedelta
+
+@app.route('/editbooking/<int:Id>', methods=['PUT'])
+def edit_booking(Id):
+    booking = BookingsTB.query.filter_by(id=Id).first()
+
+    if not booking:
+        return jsonify({'message': 'Booking not found'}), 404
+
+    data = request.get_json()
+
+    # required_fields = ['fromTime', 'toTime', 'startDate', 'endDate']
+    # for field in required_fields:
+    #     if field not in data:
+    #         return jsonify({'error': f'Missing field: {field}'}), 400
+
+    toTime = data.get('toTime', booking.toTime)
+    fromTime = data.get('fromTime', booking.fromTime)
+    startDate = data.get('startDate', booking.startDate)
+    endDate = data.get('endDate', booking.endDate)
+    branch = data.get('branch', booking.branch)
+
+    if not startDate or not endDate:
+        return jsonify({'error': 'Start date and end date are required.'}), 400
+
+    try:
+        from_time = datetime.strptime(fromTime, '%H:%M').time()
+        to_time = datetime.strptime(toTime, '%H:%M').time()
+    except ValueError:
+        return jsonify({'error': 'Invalid time format. Please use HH:MM format.'}), 400
+
+    try:
+        inputStartDate = datetime.strptime(startDate, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Please use YYYY-MM-DD format for start date.'}), 400
+
+    try:
+        inputEndDate = datetime.strptime(endDate, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Please use YYYY-MM-DD format for end date.'}), 400
+
+    if inputStartDate < today:
+        return jsonify({'error': 'The \'Start\' date cannot be in the past. Please select today\'s date or a future date.'}), 400
+    if inputEndDate < today:
+        return jsonify({'error': 'The \'End\' date cannot be in the past. Please select today\'s date or a future date.'}), 400
+    
+    if inputEndDate < inputStartDate:
+        return jsonify({'error': 'The \'End\' date cannot be before the \'Start\' date.'}), 400
+    
+    if inputEndDate == inputStartDate and from_time >= to_time:
+        return jsonify({'error': 'The \'To\' time cannot be before or Equal to the \'Start\' time.'}), 400
+    
+    if (inputStartDate == today) and from_time < time:
+        return jsonify({'error': 'The \'From\' time cannot be before the current Time. Please select a future time.'}), 400
+
+    inputStart = datetime.combine(inputStartDate, from_time)
+    inputEnd = datetime.combine(inputEndDate, to_time)
+    cooldown = timedelta(hours=1)
+    existing_bookings = BookingsTB.query.filter_by(ename=booking.ename).all()
+
+    for existing_booking in existing_bookings:
+        coolStart = datetime.combine(existing_booking.startDate, datetime.strptime(existing_booking.fromTime, '%H:%M').time())
+        coolEnd = datetime.combine(existing_booking.endDate, datetime.strptime(existing_booking.toTime, '%H:%M').time())
+        if branch != existing_booking.branch:
+            coolStart -= cooldown
+            coolEnd += cooldown
+        if inputStart < coolEnd and inputEnd > coolStart:
+            return jsonify({'error': 'The time slots you are trying to update is clashing with cooldown time'}), 400
+
+    booking.fromTime = fromTime
+    booking.toTime = toTime
+    booking.startDate = startDate
+    booking.endDate = endDate
+    booking.branch = branch
+
+    try:
+        db.session.commit()
+        return jsonify({'message': 'Booking updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to update booking', 'error': str(e)}), 500
+    
+
+
 
 @app.route('/addequipment', methods=['POST'])
 def add_equipment():
@@ -382,7 +468,7 @@ def sort_by():
             'endDate': row.endDate.strftime('%a, %d %b %Y'),
             'toTime': row.toTime,
             'doctorName': row.doctorName,
-            'bookingTime': row.bookignTime,
+            'bookingTime': row.bookingTime,
             'bookingDate': row.bookingDate
             } for row in sorted_items]
     return jsonify(result)
