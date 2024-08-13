@@ -37,7 +37,6 @@ function DeleteTable({ data, errorr, afterDelete }) {
             endDate: formatDate(editEndDate)
         };
     
-        console.log("Payload:", payload); // Debugging line
     
         axios.put(`http://127.0.0.1:5000/editbooking/${row.id}`, payload)
             .then(response => {

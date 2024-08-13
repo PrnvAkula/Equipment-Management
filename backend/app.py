@@ -167,7 +167,6 @@ def booking():
     bookingTime = data['bookingTime']
     bookingDate = data['bookingDate']
     
-    # print(current_user)
     
 
     from_time = datetime.strptime(f"{fromTime}", '%H:%M').time()
