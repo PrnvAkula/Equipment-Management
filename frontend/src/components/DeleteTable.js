@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from 'react-bootstrap/Button';
 import { Toasts } from './Alerts';
 import axios from 'axios';
+import Alerts from "./Alerts";
 
-function DeleteTable({ data, errorr, afterDelete }) {
+function DeleteTable() {
     const [selectedRows, setSelectedRows] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -12,6 +13,8 @@ function DeleteTable({ data, errorr, afterDelete }) {
     const [editStartDate, setEditStartDate] = useState('');
     const [editEndDate, setEditEndDate] = useState('');
     const [editRowId, setEditRowId] = useState(null);
+    const [data, setData] = useState([]);
+    const [errorr, setErrorr] = useState('');
 
     const handleEditClick = (row) => {
         setEditRowId(row.id);
@@ -20,7 +23,14 @@ function DeleteTable({ data, errorr, afterDelete }) {
         setEditStartDate(row.startDate);
         setEditEndDate(row.endDate);
     };
-
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5000/editing`)
+          .then(response => response.json())
+          .then(data => {setData(data)
+            setErrorr(data.message)
+          })
+          .catch(error => console.error('Error:', error));
+      }, [success]);
     const handleSaveClick = (row) => {
         const formatDate = (dateStr) => {
             const date = new Date(dateStr);
@@ -43,7 +53,7 @@ function DeleteTable({ data, errorr, afterDelete }) {
                 if (response.status === 200) {
                     setSuccess('Booking updated successfully');
                     setError('');
-                    window.location.reload();
+                    // window.location.reload();
                 } else {
                     setError('Failed to update booking');
                     setSuccess('');
@@ -89,7 +99,7 @@ function DeleteTable({ data, errorr, afterDelete }) {
                             setSelectedRows(selectedRows.filter(selectedRow => selectedRow.id !== row.id));
                             setSuccess('Bookings deleted successfully');
                             setError('');
-                            window.location.reload();
+                            // window.location.reload();
                         } else {
                             setError('Failed to delete item');
                             setSuccess('');
@@ -195,6 +205,7 @@ function DeleteTable({ data, errorr, afterDelete }) {
             </table>
             {!errorr &&
                 <Button onClick={handleDelete} className='but'>Delete</Button>}
+                {errorr && <Alerts error = {errorr}/>}
         </div>
 
     );

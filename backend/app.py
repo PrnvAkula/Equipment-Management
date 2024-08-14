@@ -109,6 +109,8 @@ class BookingsTB(db.Model):
         self.startDate = startDate
         self.endDate = endDate
         self.doctorName = doctorName
+        self.bookingTime = bookingTime
+        self.bookingDate = bookingDate
 
     
 
@@ -283,11 +285,9 @@ def get_data():
             } for row in data]  
     return jsonify(result)
 
-@app.route('/data/<userId>', methods=['GET'])
-
-def get_items_by_user(userId):
-    data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)),BookingsTB.endDate, (cast(BookingsTB.toTime, Time) )).filter_by(userid = userId).all()
-
+@app.route('/editing', methods=['GET'])
+def get_items_by_user():
+    data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)),BookingsTB.endDate, (cast(BookingsTB.toTime, Time) )).filter(BookingsTB.endDate >= today).filter(BookingsTB.toTime >= time).all()
     if len(data) == 0:
         return jsonify({'message': 'You Have No Bookings'}), 404
     result = [{'id': row.id,
@@ -338,6 +338,7 @@ def edit_booking(Id):
     startDate = data.get('startDate', booking.startDate)
     endDate = data.get('endDate', booking.endDate)
     branch = data.get('branch', booking.branch)
+    ename = data.get('ename', booking.ename)
 
     if not startDate or not endDate:
         return jsonify({'error': 'Start date and end date are required.'}), 400
@@ -375,17 +376,17 @@ def edit_booking(Id):
     inputStart = datetime.combine(inputStartDate, from_time)
     inputEnd = datetime.combine(inputEndDate, to_time)
     cooldown = timedelta(hours=1)
-    existing_bookings = BookingsTB.query.filter_by(ename=booking.ename).all()
+    # existing_bookings = BookingsTB.query.filter_by(ename=ename).all()
+    # for booking in existing_bookings:
+    #     coolStart = datetime.combine(datetime.strptime(f"{booking.startDate}", '%Y-%m-%d').date(), datetime.strptime(f"{booking.fromTime}", '%H:%M').time())
+    #     coolEnd = datetime.combine(datetime.strptime(f"{booking.endDate}", '%Y-%m-%d').date(), datetime.strptime(f"{booking.toTime}", '%H:%M').time())
+    #     if branch != booking.branch:
+    #         coolStart = (coolStart - cooldown)
+    #         coolEnd = (coolEnd + cooldown)
+    #     if inputStart < coolEnd and inputEnd > coolStart:
+    #         return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
 
-    for existing_booking in existing_bookings:
-        coolStart = datetime.combine(existing_booking.startDate, datetime.strptime(existing_booking.fromTime, '%H:%M').time())
-        coolEnd = datetime.combine(existing_booking.endDate, datetime.strptime(existing_booking.toTime, '%H:%M').time())
-        if branch != existing_booking.branch:
-            coolStart -= cooldown
-            coolEnd += cooldown
-        if inputStart < coolEnd and inputEnd > coolStart:
-            return jsonify({'error': 'The time slots you are trying to update is clashing with cooldown time'}), 400
-
+    
     booking.fromTime = fromTime
     booking.toTime = toTime
     booking.startDate = startDate

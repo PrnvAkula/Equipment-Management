@@ -63,7 +63,7 @@ function BookingPage() {
         setSuccess('');
     }
     const handleSubmit = async (event) => {
-        
+        console.log(currentTime)
         event.preventDefault();
         try {
             console.log(`Bearer ${auth.accessToken}`)

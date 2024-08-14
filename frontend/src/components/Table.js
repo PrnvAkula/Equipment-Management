@@ -30,8 +30,8 @@ function Table({data}){
                     <td>{row.fromTime}</td>
                     <td>{row.endDate}</td>
                     <td>{row.toTime}</td>
-                    <td>{row.BookingDate}</td>
-                    <td>{row.BookingTime}</td>
+                    <td>{row.bookingTime}</td>
+                    <td>{row.bookingDate}</td>
                     </tr>
                 ))}
                 </tbody>
