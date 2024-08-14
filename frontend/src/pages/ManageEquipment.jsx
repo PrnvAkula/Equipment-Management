@@ -67,7 +67,7 @@ function ManageEquipment() {
 
     return (
         <>
-            <TabsExample op1={'View Bookings'} op2={'Manage Equipment'} op1href={'/staffhome'} op2href={'/manageequipment'} />
+            <TabsExample op1={'View Bookings'} op2={'Statistical Data'} op3= {'Manage Equipment'} op4= {'Edit Bookings'} op1href={'/staffhome'} op2href={'/stats'} op3href={'/manageequipment'} op4href={'/deletebooking'} />
             {error && <Alerts error={error} />}
             {success && <Success success={success} />}
             <div className='details'>

@@ -67,7 +67,7 @@ function BookingPage() {
         event.preventDefault();
         try {
             console.log(`Bearer ${auth.accessToken}`)
-
+            
             const response = await axios.post('http://127.0.0.1:5000/booking', { 
                 doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,username,bookingTime,bookingDate,
                 headers: {
@@ -100,11 +100,9 @@ function BookingPage() {
     }
     return (
         <div>
-
-            <TabsExample op1 = {'Book Equipment'} 
-            op2= {'Delete Booking'}
-            op1href = {'/doctorhome'}
-            op2href = {'/deletebooking'} />
+            {auth.roles === 'doctor' && <TabsExample op1 = {'Book Equipment'} op1href = {'/doctorhome'}/>}
+            {auth.roles === 'staff' && <TabsExample op1={'View Bookings'} op2={'Book Equipment'} op1href={'/staffhome'} op2href={'/doctorhome'} />}
+            {auth.roles === 'admin' && <TabsExample op1={'View Bookings'} op2={'Statistical Data'} op3= {'Manage Equipment'} op4= {'Edit Bookings'} op1href={'/staffhome'} op2href={'/stats'} op3href={'/manageequipment'} op4href={'/deletebooking'} />}
             <div className='equipment'>
                 <h2> Welcome, {username}! </h2>
                 {error && Toasts( {error :error, type:'Error', onClose : onClose})}
@@ -116,6 +114,7 @@ function BookingPage() {
                         {/* <input type="text" value={branch} onChange={e => setbranch(e.target.value)} /> */}
                         <select onChange={handleBranchChange} value={branch}>
                             <option value="">Select Branch</option>
+                            <option value="HitecCity">Hitec City</option>
                             <option value="Malakpet">Malakpet</option>
                             <option value="Secunderabad">Secunderabad</option>
                             <option value="Somajiguda">Somajiguda</option>

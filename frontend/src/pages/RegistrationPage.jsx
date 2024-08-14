@@ -36,6 +36,7 @@ function RegisterUser() {
             <div className='designation'>
                 <select value={designation} onChange={(e) => setDesignation(e.target.value)} required>
                     <option value="">Select Designation</option>
+                    <option value="admin">Admin</option>
                     <option value="staff">Staff</option>
                     <option value="doctor">Doctor</option>
                 </select>

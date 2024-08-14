@@ -44,10 +44,7 @@ function DeleteBooking(){
 
     return (
         <>
-        <TabsExample op1 = {'Book Equipment'} 
-            op2= {'Delete Booking'}
-            op1href = {'/doctorhome'}
-            op2href = {'/deletebooking'} />
+        <TabsExample op1={'View Bookings'} op2={'Statistical Data'} op3= {'Manage Equipment'} op4= {'Edit Bookings'} op1href={'/staffhome'} op2href={'/stats'} op3href={'/manageequipment'} op4href={'/deletebooking'} />
         <DeleteTable data = {data} errorr ={error} afterDelete = {afterDelete}/>
         {error && <Alerts error = {error}/>}
         
