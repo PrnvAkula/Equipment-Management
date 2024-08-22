@@ -7,8 +7,8 @@ export default function Stats() {
     const [data, setData] = useState([]);
     const [error, setError] = useState('');
     const [sortBy, setSortBy] = useState('');
-    const [fromDate, setFromDate] = useState('');
-    const [toDate, setToDate] = useState('');
+    const [month, setMonth] = useState('');
+   
 
     const handleSortChange = (event) => {
         setSortBy(event.target.value);
@@ -17,21 +17,23 @@ export default function Stats() {
         if(sortBy !== ''){
         const fetchData = async () => {
             try {
-              const response = await fetch(`http://127.0.0.1:5000/datacount/${sortBy}?from_date=${fromDate}&to_date=${toDate}`);
-              if (!response.ok) {
-                throw new Error('Network response was not ok');
-              }
+              const response = await fetch(`http://127.0.0.1:5000/datacount/${sortBy}?month=${month}`);
               const data = await response.json();
-              setData(data);
-              setError(data.message);
-            } catch (error) {
-              console.error('Error fetching data:', error);
-              setError('Error fetching data');
+              if (response.ok) {
+                setData(data);
+                setError('');
+            } else {
+                setData([]);
+                setError(data.message);
             }
+        } catch (err) {
+            setData([]);
+            setError('An error occurred while fetching data.');
+        }
         }
         fetchData();
     }
-    }, [sortBy, fromDate, toDate]);
+    }, [sortBy, month]);
   return (
     <div>
         <TabsExample op1={'View Bookings'} op2={'Statistical Data'} op3= {'Manage Equipment'} op4= {'Edit Bookings'} op1href={'/staffhome'} op2href={'/stats'} op3href={'/manageequipment'} op4href={'/deletebooking'} />
@@ -46,13 +48,10 @@ export default function Stats() {
             <option value="HitecCity">Hitec City</option>
         </select>
         <label>
-                    From Date:
-                    <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                    Month:
+                    <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
                 </label>
-                <label>
-                    To Date:
-                    <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-                </label>
+                
         </div>
 
         {sortBy && !error && <table className="table table-striped">

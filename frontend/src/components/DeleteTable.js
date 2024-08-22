@@ -15,6 +15,7 @@ function DeleteTable() {
     const [editRowId, setEditRowId] = useState(null);
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
+    const [sortBy, setSortBy] = useState('Active');
 
     const handleEditClick = (row) => {
         setEditRowId(row.id);
@@ -24,13 +25,14 @@ function DeleteTable() {
         setEditEndDate(row.endDate);
     };
     useEffect(() => {
-        fetch(`http://127.0.0.1:5000/editing`)
+        fetch(`http://127.0.0.1:5000/Sortby?sort_by=${sortBy}`)
           .then(response => response.json())
           .then(data => {setData(data)
             setErrorr(data.message)
           })
           .catch(error => console.error('Error:', error));
-      }, [success]);
+      }, [success, sortBy]);
+      
     const handleSaveClick = (row) => {
         const formatDate = (dateStr) => {
             const date = new Date(dateStr);
@@ -114,11 +116,23 @@ function DeleteTable() {
             console.log("Delete operation was canceled by the user.");
         }
     };
-
+    const handleSortChange = (event) => {
+        setSortBy(event.target.value);
+        };
     return (
         <div>
             {error && Toasts({ error: error, type: 'Error', onClose: onClose })}
             {success && Toasts({ error: success, type: 'Success', onClose: onClose })}
+            <div className='viewequipment'>
+        Sort by:
+        <select onChange={handleSortChange} value={sortBy}>
+          <option value="Active">Active</option>
+          <option value="Date">Date</option>
+          <option value="Branch">Branch</option>
+          <option value="Equipment">Equipment</option>
+        </select>
+        
+      </div>
             <table className="table table-striped">
                 <thead>
                     <tr>

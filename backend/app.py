@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from json import JSONEncoder
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import cast, Time
+from sqlalchemy import cast, Time, desc, extract, func
 from flask_cors import CORS  
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, date
@@ -9,9 +9,8 @@ import pytz
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from dotenv import load_dotenv
 import os
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, or_
 load_dotenv()
-
 JWT_KEY = os.getenv('JWT_KEY')
 REQUIRED_KEYWORD = os.getenv('REQUIRED_KEYWORD')
 REQUIRED_KEYWORD_ADMIN = os.getenv('REQUIRED_KEYWORD_ADMIN')
@@ -28,63 +27,8 @@ app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
-class BookingService:
-    @staticmethod
-    def get_equipment_usage_summary(branch, from_date=None, to_date=None):
-        # booked_equipment_query = db.session.query(
-        #     BookingsTB.ename.label('equipment_name')
-        # ).filter(BookingsTB.branch == branch)
-        # all_equipment_query = db.session.query(
-        #     Equipment.equipment.label('equipment_name')
-        # )
-        # all_equipment_union = booked_equipment_query.union(all_equipment_query).subquery()
-        # results = db.session.query(
-        #     all_equipment_union.c.equipment_name,
-        #     func.count(BookingsTB.id).label('booking_count')
-        # ).outerjoin(BookingsTB, (all_equipment_union.c.equipment_name == BookingsTB.ename) & (BookingsTB.branch == branch)
-        # ).group_by(all_equipment_union.c.equipment_name
-        # ).all()
-        if from_date:
-            from_date = datetime.strptime(from_date, '%Y-%m-%d')
-        if to_date:
-            to_date = datetime.strptime(to_date, '%Y-%m-%d')
-        booked_equipment_query = db.session.query(
-            BookingsTB.ename.label('equipment_name')
-        ).filter(BookingsTB.branch == branch)
 
-        # Apply date filters if provided
-        if from_date and to_date:
-            booked_equipment_query = booked_equipment_query.filter(
-                and_(BookingsTB.startDate >= from_date, BookingsTB.endDate <= to_date)
-            )
-        elif from_date:
-            booked_equipment_query = booked_equipment_query.filter(BookingsTB.startDate >= from_date)
-        elif to_date:
-            booked_equipment_query = booked_equipment_query.filter(BookingsTB.endDate <= to_date)
 
-        # Query to get all equipment names from Equipment table
-        all_equipment_query = db.session.query(
-            Equipment.equipment.label('equipment_name')
-        )
-
-        # Union of both queries
-        all_equipment_union = booked_equipment_query.union(all_equipment_query).subquery()
-
-        # Final query to get the equipment usage summary
-        results = db.session.query(
-            all_equipment_union.c.equipment_name,
-            func.count(BookingsTB.id).label('booking_count')
-        ).outerjoin(BookingsTB, (all_equipment_union.c.equipment_name == BookingsTB.ename) & (BookingsTB.branch == branch)
-        ).group_by(all_equipment_union.c.equipment_name
-        ).all()
-        summary = [
-            {
-                "equipment_name": result.equipment_name,
-                "booking_count": result.booking_count
-            }
-            for result in results
-        ]
-        return summary
     
 class BookingsTB(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -196,7 +140,6 @@ def refresh():
     return jsonify({'access_token': access_token}), 200
 
 @app.route('/booking', methods=['POST'])
-
 def booking():
     data = request.get_json()
     userid = data['username']
@@ -256,7 +199,7 @@ def booking():
             coolStart = (coolStart - cooldown)
             coolEnd = (coolEnd + cooldown)
         if inputStart < coolEnd and inputEnd > coolStart:
-            return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
+            return jsonify({'error': 'The Equipments have a cooldown time of 1 hour'}), 400
 
     new_equipment = BookingsTB(doctorName=doctorName, userid=userid, branch=branch, ename=ename, surgeryType=surgeryType, toTime=toTime, fromTime=fromTime, startDate=startDate, endDate=endDate, bookingTime=bookingTime, bookingDate=bookingDate)
     db.session.add(new_equipment)
@@ -265,7 +208,6 @@ def booking():
 
 
 @app.route('/data', methods=['GET'])
-
 def get_data():
     data = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time))).all()
     if len(data) == 0:
@@ -287,9 +229,9 @@ def get_data():
 
 @app.route('/editing', methods=['GET'])
 def get_items_by_user():
-    data = BookingsTB.query.order_by(BookingsTB.startDate ,(cast(BookingsTB.fromTime, Time)),BookingsTB.endDate, (cast(BookingsTB.toTime, Time) )).filter(BookingsTB.endDate >= today).filter(BookingsTB.toTime >= time).all()
+    data = BookingsTB.query.order_by(desc(BookingsTB.startDate) ,desc((cast(BookingsTB.fromTime, Time))),desc(BookingsTB.endDate), desc(cast(BookingsTB.toTime, Time) )).all()
     if len(data) == 0:
-        return jsonify({'message': 'You Have No Bookings'}), 404
+        return jsonify({'message': 'There are No Bookings'}), 404
     result = [{'id': row.id,
             'userid': row.userid,
             'branch': row.branch,
@@ -328,10 +270,6 @@ def edit_booking(Id):
 
     data = request.get_json()
 
-    # required_fields = ['fromTime', 'toTime', 'startDate', 'endDate']
-    # for field in required_fields:
-    #     if field not in data:
-    #         return jsonify({'error': f'Missing field: {field}'}), 400
 
     toTime = data.get('toTime', booking.toTime)
     fromTime = data.get('fromTime', booking.fromTime)
@@ -372,20 +310,6 @@ def edit_booking(Id):
     
     if (inputStartDate == today) and from_time < time:
         return jsonify({'error': 'The \'From\' time cannot be before the current Time. Please select a future time.'}), 400
-
-    inputStart = datetime.combine(inputStartDate, from_time)
-    inputEnd = datetime.combine(inputEndDate, to_time)
-    cooldown = timedelta(hours=1)
-    # existing_bookings = BookingsTB.query.filter_by(ename=ename).all()
-    # for booking in existing_bookings:
-    #     coolStart = datetime.combine(datetime.strptime(f"{booking.startDate}", '%Y-%m-%d').date(), datetime.strptime(f"{booking.fromTime}", '%H:%M').time())
-    #     coolEnd = datetime.combine(datetime.strptime(f"{booking.endDate}", '%Y-%m-%d').date(), datetime.strptime(f"{booking.toTime}", '%H:%M').time())
-    #     if branch != booking.branch:
-    #         coolStart = (coolStart - cooldown)
-    #         coolEnd = (coolEnd + cooldown)
-    #     if inputStart < coolEnd and inputEnd > coolStart:
-    #         return jsonify({'error': 'The equipment is already booked for the selected date and time'}), 400
-
     
     booking.fromTime = fromTime
     booking.toTime = toTime
@@ -399,9 +323,6 @@ def edit_booking(Id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'Failed to update booking', 'error': str(e)}), 500
-    
-
-
 
 @app.route('/addequipment', methods=['POST'])
 def add_equipment():
@@ -469,7 +390,13 @@ def sort_by():
             query = BookingsTB.query.filter(BookingsTB.ename == sort) 
     else:
         if sort_by == 'Active':
-            query = BookingsTB.query.filter(BookingsTB.endDate >= today).filter(BookingsTB.toTime >= time)
+            today1 = datetime.now(pytz.timezone('Asia/Kolkata')).date()
+            time_str1 = now.strftime('%H:%M')
+            time1 = datetime.strptime(f"{today1} {time_str1}", '%Y-%m-%d %H:%M').time()
+            query = BookingsTB.query.filter(
+                (BookingsTB.endDate > today1) |
+                ((BookingsTB.endDate == today1) & (BookingsTB.toTime >= time1))
+            )
         elif sort_by == 'Date':
             query = BookingsTB.query.order_by(BookingsTB.startDate,(cast(BookingsTB.fromTime, Time)), BookingsTB.endDate ,(cast(BookingsTB.toTime, Time)))
         elif sort_by == 'Branch':
@@ -505,13 +432,58 @@ def sort_by():
     return jsonify(result)
 
 @app.route('/datacount/<sortBy>', methods=['GET'])
-def equipment_usage_summary(sortBy):
-    from_date = request.args.get('from_date')
-    to_date = request.args.get('to_date')
-    summary = BookingService.get_equipment_usage_summary(sortBy, from_date, to_date)
-    return jsonify(summary)
+def count_bookings_by_equipment(sortBy):
+    month = request.args.get('month')
+    if month:
+        start_date = datetime.strptime(month, '%Y-%m')
+        end_date = datetime(start_date.year, start_date.month + 1, 1) if start_date.month < 12 else datetime(start_date.year + 1, 1, 1)
+    else:
+        start_date = None
+        end_date = None
 
+    # Query for existing equipment
+    query_existing = db.session.query(
+        Equipment.equipment,
+        func.count(BookingsTB.id).label('booking_count')
+    ).outerjoin(BookingsTB, and_(
+        Equipment.equipment == BookingsTB.ename,
+        BookingsTB.branch == sortBy
+    ))
+
+    if start_date and end_date:
+        query_existing = query_existing.filter(BookingsTB.startDate >= start_date, BookingsTB.startDate < end_date)
+
+    query_existing = query_existing.group_by(Equipment.equipment)
+
+    # Query for deleted equipment
+    subquery = db.session.query(Equipment.equipment).subquery()
+    query_deleted = db.session.query(
+        BookingsTB.ename.label('equipment'),
+        func.count(BookingsTB.id).label('booking_count')
+    ).filter(
+        and_(
+            BookingsTB.ename.notin_(subquery),
+            BookingsTB.branch == sortBy
+        )
+    )
+    if start_date and end_date:
+        query_deleted = query_deleted.filter(BookingsTB.startDate >= start_date, BookingsTB.startDate < end_date)
+
+    query_deleted = query_deleted.group_by(BookingsTB.ename)
+
+    # Combine results
+    results_existing = query_existing.all()
+    results_deleted = query_deleted.all()
+
+    # Convert results to a list of dictionaries
+    bookings_list = [{'equipment_name': equipment, 'booking_count': count} for equipment, count in results_existing]
+    bookings_list += [{'equipment_name': equipment, 'booking_count': count} for equipment, count in results_deleted]
+    if not bookings_list:
+        return jsonify({'message': 'No equipment was used during the selected period.'}), 404
+    return jsonify(bookings_list)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
