@@ -11,7 +11,8 @@ function BookingPage() {
     const {auth} = useAuth();
     const today = new Date();            
     const todaydate = today.getFullYear() + ((today.getMonth() + 1 )>9 ? '-' : '-0') +  (today.getMonth() + 1 ) + ((today.getDate())>9 ? '-':'-0') + (today.getDate());
-    const currentTime = ((today.getHours() > 10)? '' : '0') + today.getHours() + ':' + ((today.getMinutes() > 10)? '' : '0') + today.getMinutes();
+    const currentTime = ((today.getHours() >= 10)? '' : '0') + today.getHours() + ':' + ((today.getMinutes() > 10)? '' : '0') + today.getMinutes();
+    console.log(currentTime);
     const [branch, setbranch] = useState('');
     const [ename, setEname] = useState('');
     const [startDate, setStartDate] = useState(`${todaydate}`);  
@@ -26,7 +27,13 @@ function BookingPage() {
     const [data, setData] = useState([]);
     const [errorr, setErrorr] = useState('');
     const [doctorName, setDoctorName] = useState('');
+    const [bookingTime, setBookingTime] = useState('');
+    const [bookingDate, setBookingDate] = useState('');
 
+    useEffect(() => {
+        setBookingTime(currentTime);
+        setBookingDate(todaydate);
+    }, [currentTime,todaydate]);
     
     useEffect(() => {
         fetch('http://127.0.0.1:5000/equipment',{
@@ -56,13 +63,13 @@ function BookingPage() {
         setSuccess('');
     }
     const handleSubmit = async (event) => {
-        
+        console.log(currentTime)
         event.preventDefault();
         try {
             console.log(`Bearer ${auth.accessToken}`)
-
+            
             const response = await axios.post('http://127.0.0.1:5000/booking', { 
-                doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,username,
+                doctorName, branch, ename, startDate, endDate, fromTime, toTime, surgeryType,username,bookingTime,bookingDate,
                 headers: {
                     Authorization : `Bearer ${auth.accessToken}`
                 }
@@ -93,11 +100,9 @@ function BookingPage() {
     }
     return (
         <div>
-
-            <TabsExample op1 = {'Book Equipment'} 
-            op2= {'Delete Booking'}
-            op1href = {'/doctorhome'}
-            op2href = {'/deletebooking'} />
+            {auth.roles === 'doctor' && <TabsExample op1 = {'Book Equipment'} op1href = {'/doctorhome'}/>}
+            {auth.roles === 'staff' && <TabsExample op1={'View Bookings'} op2={'Book Equipment'} op1href={'/staffhome'} op2href={'/doctorhome'} />}
+            {auth.roles === 'admin' && <TabsExample op1={'View Bookings'} op2={'Statistical Data'} op3= {'Manage Equipment'} op4= {'Edit Bookings'} op1href={'/staffhome'} op2href={'/stats'} op3href={'/manageequipment'} op4href={'/deletebooking'} />}
             <div className='equipment'>
                 <h2> Welcome, {username}! </h2>
                 {error && Toasts( {error :error, type:'Error', onClose : onClose})}
@@ -109,6 +114,7 @@ function BookingPage() {
                         {/* <input type="text" value={branch} onChange={e => setbranch(e.target.value)} /> */}
                         <select onChange={handleBranchChange} value={branch}>
                             <option value="">Select Branch</option>
+                            <option value="HitecCity">Hitec City</option>
                             <option value="Malakpet">Malakpet</option>
                             <option value="Secunderabad">Secunderabad</option>
                             <option value="Somajiguda">Somajiguda</option>

@@ -9,7 +9,7 @@ import useAuth from '../Util/Context';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-function TabsExample({ op1, op2, op1href, op2href ,defhref}) {
+function TabsExample({ op1, op2, op1href, op2href ,op3, op4, op3href, op4href}) {
     const { setAuth } = useAuth();
     const navigate = useNavigate();
     function handleSignOut() {
@@ -37,6 +37,16 @@ function TabsExample({ op1, op2, op1href, op2href ,defhref}) {
                         <Nav.Item>
                             <Nav.Link>
                                 <Link to={op2href} className="custom-nav-link">{op2}</Link>
+                            </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link>
+                                <Link to={op3href} className="custom-nav-link">{op3}</Link>
+                            </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link>
+                                <Link to={op4href} className="custom-nav-link">{op4}</Link>
                             </Nav.Link>
                         </Nav.Item>
                     </Nav>

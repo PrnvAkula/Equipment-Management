@@ -11,9 +11,11 @@ function Table({data}){
                         <th scope="col">Equipment</th>
                         <th scope="col">Surgery Type</th>
                         <th scope="col">Start Date</th>           
-                        <th scope="col">From </th>
+                        <th scope="col">From Time</th>
                         <th scope="col">End Date </th>
-                        <th scope="col">To</th>
+                        <th scope="col">To Time</th>
+                        <th scope="col">Booking Time</th>
+                        <th scope="col">Booking Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,6 +30,8 @@ function Table({data}){
                     <td>{row.fromTime}</td>
                     <td>{row.endDate}</td>
                     <td>{row.toTime}</td>
+                    <td>{row.bookingTime}</td>
+                    <td>{row.bookingDate}</td>
                     </tr>
                 ))}
                 </tbody>
